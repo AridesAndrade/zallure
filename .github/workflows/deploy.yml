@@ -30,12 +30,12 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: pnpm install
+        run: cd client && pnpm install
 
-      - name: Build project
-        run: pnpm run build
+      - name: Build
+        run: cd client && pnpm run build
 
-      - name: Debug output
+      - name: Verify output
         run: ls -R client
 
       - name: Upload artifact
