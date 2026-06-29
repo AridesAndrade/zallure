@@ -30,18 +30,18 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: cd client && pnpm install
+        run: pnpm install
 
       - name: Build
-        run: cd client && pnpm run build
+        run: pnpm run build
 
-      - name: Verify output
-        run: ls -R client
+      - name: Debug output
+        run: ls -R dist
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: client/dist/public
+          path: dist/public
 
   deploy:
     needs: build
