@@ -18,9 +18,9 @@ export default function Header() {
         {/* Logo */}
         <div className="flex items-center">
           <img
-            src="/manus-storage/LogoZallureretangular_13e7f00b.png"
-            alt="Zallure Logo"
-            className="h-10 w-auto"
+              src="/logo.png"
+              alt="Zallure Logo"
+              className="h-10 w-auto"
           />
         </div>
 
