@@ -30,13 +30,13 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: cd client && pnpm install
+        run: pnpm install
 
-      - name: Build frontend
-        run: cd client && pnpm run build
+      - name: Build project
+        run: pnpm run build
 
-      - name: Check output
-        run: ls -R client/dist
+      - name: Debug output
+        run: ls -R client
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
