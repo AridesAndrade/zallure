@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Enable Corepack (pnpm)
+      - name: Enable Corepack
         run: corepack enable
 
       - name: Setup Node
@@ -29,11 +29,14 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install dependencies
-        run: pnpm install
+      - name: Install dependencies (frontend)
+        run: cd cliente && pnpm install
 
-      - name: Build project
-        run: pnpm run build
+      - name: Build frontend
+        run: cd cliente && pnpm run build
+
+      - name: Check dist exists
+        run: ls -R cliente/dist
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
