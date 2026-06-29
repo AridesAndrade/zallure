@@ -29,19 +29,19 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install dependencies (frontend)
-        run: cd cliente && pnpm install
+      - name: Install dependencies
+        run: cd client && pnpm install
 
       - name: Build frontend
-        run: cd cliente && pnpm run build
+        run: cd client && pnpm run build
 
-      - name: Check dist exists
-        run: ls -R cliente/dist
+      - name: Check output
+        run: ls -R client/dist
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: cliente/dist
+          path: client/dist/public
 
   deploy:
     needs: build
