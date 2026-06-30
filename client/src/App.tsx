@@ -25,7 +25,6 @@ function Router() {
 
 function App() {
   return (
-    <ErrorBoundary>
       <ThemeProvider
         defaultTheme="light"
         // switchable
@@ -35,7 +34,6 @@ function App() {
           <Router />
         </TooltipProvider>
       </ThemeProvider>
-    </ErrorBoundary>
   );
 }
 
