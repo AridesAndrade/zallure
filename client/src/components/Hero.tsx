@@ -1,15 +1,3 @@
-/**
- * Hero Component - Zallure Landing Page
- * 
- * Design Philosophy:
- * - Split layout: 35% card (left) + 65% image (right)
- * - Card background: Branco Gelo (#F6F6F2)
- * - Headline: Verde Petróleo, bold, 56px
- * - Rating: Social proof with stars
- * - Benefits: Checkmarks in verde petróleo
- * - CTA: Ouro (#F3C533) with dark text
- */
-
 import { Star, Check } from "lucide-react";
 
 const benefits = [
@@ -25,9 +13,9 @@ export default function Hero() {
       <div className="container">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
           {/* Card Informativo */}
-          <div className="bg-[#F6F6F2] rounded-lg p-8 md:p-10 space-y-6 order-2 md:order-1 animate-fade-in-up shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div className="bg-[#F6F6F2] rounded-lg p-8 md:p-10 space-y-6 order-2 md:order-1 shadow-sm hover:shadow-md transition-shadow duration-300">
             {/* Headline */}
-            <h1 className="text-4xl md:text-5xl font-montserrat font-bold text-[#28595A] leading-tight animate-fade-in" style={{animationDelay: '0.1s'}}>
+            <h1 className="text-4xl md:text-5xl font-montserrat font-bold text-[#28595A] leading-tight">
               Produtos que realmente melhoram sua vida
             </h1>
 
@@ -68,14 +56,14 @@ export default function Hero() {
               href="https://www.amazon.com.br/s?me=A1A4OKNWC2CQ6O&marketplaceID=A2Q3Y263D00KWC"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block bg-[#F3C533] text-[#111111] hover:bg-[#E0B82A] font-semibold text-base h-12 px-8 transition-all duration-200 active:scale-95 btn-hover-scale animate-fade-in rounded" style={{animationDelay: '0.3s'}}
+              className="inline-block bg-[#F3C533] text-[#111111] hover:bg-[#E0B82A] font-semibold text-base h-12 px-8 transition-all duration-200 active:scale-95 btn-hover-scale rounded"
             >
               Explorar Produtos
             </a>
           </div>
 
           {/* Imagem Hero */}
-          <div className="relative overflow-hidden rounded-lg order-1 md:order-2 animate-fade-in" style={{animationDelay: '0.2s'}}>
+          <div className="relative overflow-hidden rounded-lg order-1 md:order-2">
             <img
               src="https://d2xsxph8kpxj0f.cloudfront.net/310419663029245873/g46GJbRyKveU3WvBqFiKUu/zallure-hero-image-HYMxKdNuC7SY8KgBqW66w7.webp"
               alt="Mulher dormindo em lençol confortável"
