@@ -1,22 +1,390 @@
-<!doctype html>
-<html lang="en">
-
-  <head>
-   <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-
-    <title>Zallure | Landing Page Profissional</title>
-
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zallure - Produtos de Cama Premium para Hotelaria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="/favicon.png" />
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Inter:wght@400;500;600&disp
-  </head>
-
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        body { 
+            font-family: 'Montserrat', sans-serif;
+            background: #f5f3f0;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* Header */
+        header {
+            background: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #28595A;
+            letter-spacing: 2px;
+        }
+        
+        .tagline {
+            font-size: 12px;
+            color: #F3C533;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        /* Hero Section */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: auto;
+            overflow: hidden;
+        }
+        
+        .hero-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(40, 89, 90, 0.15) 0%, rgba(243, 197, 51, 0.1) 100%);
+            pointer-events: none;
+        }
+        
+        .hero-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            z-index: 10;
+            width: 90%;
+            max-width: 600px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        .hero-content h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 8vw, 56px);
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        
+        .hero-content p {
+            font-size: clamp(16px, 4vw, 20px);
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            margin-bottom: 0;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        
+        .cta-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .cta-section h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            color: #28595A;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .cta-section p {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 40px;
+            line-height: 1.8;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #28595A 0%, #1a3a3b 100%);
+            color: white;
+            padding: 18px 50px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            border: 2px solid #28595A;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(40, 89, 90, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #F3C533 0%, #f0b800 100%);
+            transition: left 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: -1;
+        }
+        
+        .cta-button:hover {
+            color: #28595A;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(40, 89, 90, 0.3);
+        }
+        
+        .cta-button:hover::before {
+            left: 0;
+        }
+        
+        /* Benefits Section */
+        .benefits {
+            background: #f5f3f0;
+            padding: 60px 20px;
+        }
+        
+        .benefits-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .benefits h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            color: #28595A;
+            text-align: center;
+            margin-bottom: 50px;
+            font-weight: 600;
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .benefit-item {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.8s ease-out backwards;
+        }
+        
+        .benefit-item:nth-child(1) { animation-delay: 0.1s; }
+        .benefit-item:nth-child(2) { animation-delay: 0.2s; }
+        .benefit-item:nth-child(3) { animation-delay: 0.3s; }
+        
+        .benefit-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(40, 89, 90, 0.1);
+        }
+        
+        .benefit-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+        
+        .benefit-item h4 {
+            color: #28595A;
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .benefit-item p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        /* Footer */
+        footer {
+            background: #28595A;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .footer-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .footer-content p {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: #F3C533;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .hero-content {
+                width: 95%;
+            }
+            
+            .hero-content h2 {
+                font-size: 28px;
+            }
+            
+            .cta-section {
+                padding: 40px 20px;
+            }
+            
+            .cta-section h3 {
+                font-size: 24px;
+            }
+            
+            .benefits {
+                padding: 40px 20px;
+            }
+            
+            .benefits h3 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div>
+                <div class="logo">ZALLURE</div>
+                <div class="tagline">Premium Bedding</div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <img src="https://d2xsxph8kpxj0f.cloudfront.net/310419663029245873/g46GJbRyKveU3WvBqFiKUu/zallure-hero-bed-VKVdmDj9d6fwFM9vfqq2uf.webp" alt="Cama Premium Zallure" class="hero-image">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h2>Conforto Premium para Seus Hóspedes</h2>
+            <p>Qualidade hoteleira que faz a diferença</p>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-container">
+            <h3>Produtos de Cama Zallure</h3>
+            <p>Transforme a experiência de seus hóspedes com nossa coleção premium de roupas de cama. Desenvolvidas com os melhores materiais, nossas peças combinam elegância, durabilidade e conforto incomparável.</p>
+            <a href="https://www.amazon.com.br/s?me=A1A4OKNWC2CQ6O&marketplaceID=A2Q3Y263D00KWC" class="cta-button">Explorar Produtos</a>
+        </div>
+    </section>
+    
+    <!-- Benefits Section -->
+    <section class="benefits">
+        <div class="benefits-container">
+            <h3>Por Que Escolher Zallure?</h3>
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <div class="benefit-icon">✨</div>
+                    <h4>Qualidade Premium</h4>
+                    <p>Materiais de primeira qualidade selecionados para durabilidade e conforto máximo</p>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🛏️</div>
+                    <h4>Conforto Hoteleiro</h4>
+                    <p>Desenvolvido especificamente para a indústria hoteleira com padrões internacionais</p>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">💎</div>
+                    <h4>Elegância Sofisticada</h4>
+                    <p>Design refinado que eleva a experiência de seus hóspedes e a imagem do seu estabelecimento</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 Zallure. Todos os direitos reservados.</p>
+            <p>Produtos de Cama Premium para Hotelaria</p>
+            <div class="footer-links">
+                <a href="https://www.amazon.com.br/s?me=A1A4OKNWC2CQ6O&marketplaceID=A2Q3Y263D00KWC">Loja Amazon</a>
+                <a href="mailto:contato@zallure.com.br">Contato</a>
+            </div>
+        </div>
+    </footer>
+</body>
 </html>
