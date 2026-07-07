@@ -323,6 +323,26 @@
             font-weight: 300;
         }
         
+        /* Luna LUM Badge */
+        .luna-lum-badge {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 120px;
+            height: auto;
+            z-index: 50;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
+            animation: fadeInUp 1.5s ease-out;
+        }
+        
+        @media (max-width: 768px) {
+            .luna-lum-badge {
+                width: 90px;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+        
         /* Footer */
         footer {
             background: #28595A;
@@ -429,7 +449,7 @@
             <div class="logo-section">
                 <img src="/logo.png" alt="Zallure Logo">
                 <div>
-                    <div class="tagline">The Hotel Experience</div>
+                    <div class="tagline">The Hotel Experience | Produtos Premium para Hotelaria</div>
                 </div>
             </div>
         </div>
@@ -440,7 +460,7 @@
         <img src="https://d2xsxph8kpxj0f.cloudfront.net/310419663029245873/g46GJbRyKveU3WvBqFiKUu/zallure-hero-bed-VKVdmDj9d6fwFM9vfqq2uf.webp" alt="The Hotel Experience - Zallure" class="hero-image">
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h1>Durma como em um Hotel Cinco Estrelas</h1>
+            <h1>Durma com o Conforto de um Hotel Cinco Estrelas</h1>
             <p>Leve para sua casa o conforto e a sofisticação inspirados nos melhores hotéis</p>
         </div>
     </section>
@@ -452,9 +472,6 @@
             <h2>Transforme sua Casa em uma Experiência de Hotel</h2>
             <p>
                 A Zallure nasceu para levar a experiência dos melhores hotéis para dentro da sua casa. Selecionamos produtos premium inspirados na hotelaria, combinando conforto, elegância, qualidade e durabilidade para transformar o descanso em uma experiência única.
-            </p>
-            <p>
-                Descubra The Hotel Experience da Zallure. Produtos premium que proporcionam conforto, sofisticação e bem-estar em todos os momentos.
             </p>
             <a href="https://www.amazon.com.br/s?me=A1A4OKNWC2CQ6O&marketplaceID=A2Q3Y263D00KWC" class="cta-button">Explorar Coleção</a>
         </div>
@@ -512,6 +529,9 @@
             </div>
         </div>
     </section>
+    
+    <!-- Luna LUM Badge -->
+    <img src="/luna-lum.jpg" alt="Luna LUM - The Hotel Experience" class="luna-lum-badge">
     
     <!-- Footer -->
     <footer>
