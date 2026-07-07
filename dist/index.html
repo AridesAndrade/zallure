@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zallure - Produtos de Cama Premium para Hotelaria</title>
+    <title>Zallure - The Hotel Experience | Conforto Premium para Casa</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="./favicon.png" />
     <style>
@@ -39,12 +39,15 @@
             justify-content: space-between;
         }
         
-        .logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 28px;
-            font-weight: 700;
-            color: #28595A;
-            letter-spacing: 2px;
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-section img {
+            height: 40px;
+            width: auto;
         }
         
         .tagline {
@@ -76,7 +79,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(40, 89, 90, 0.15) 0%, rgba(243, 197, 51, 0.1) 100%);
+            background: linear-gradient(135deg, rgba(40, 89, 90, 0.25) 0%, rgba(243, 197, 51, 0.15) 100%);
             pointer-events: none;
         }
         
@@ -89,51 +92,64 @@
             color: white;
             z-index: 10;
             width: 90%;
-            max-width: 600px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            max-width: 700px;
+            text-shadow: 0 3px 15px rgba(0,0,0,0.4);
             animation: fadeInUp 1s ease-out;
         }
         
-        .hero-content h2 {
+        .hero-content h1 {
             font-family: 'Playfair Display', serif;
-            font-size: clamp(32px, 8vw, 56px);
+            font-size: clamp(36px, 10vw, 64px);
             font-weight: 700;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             letter-spacing: 1px;
+            line-height: 1.2;
         }
         
         .hero-content p {
-            font-size: clamp(16px, 4vw, 20px);
+            font-size: clamp(16px, 3.5vw, 20px);
             font-weight: 300;
             letter-spacing: 0.5px;
             margin-bottom: 0;
+            line-height: 1.6;
         }
         
-        /* CTA Section */
-        .cta-section {
+        /* Main Content Section */
+        .main-content {
             background: white;
-            padding: 60px 20px;
+            padding: 80px 20px;
             text-align: center;
         }
         
-        .cta-container {
-            max-width: 800px;
+        .content-container {
+            max-width: 900px;
             margin: 0 auto;
         }
         
-        .cta-section h3 {
+        .main-content h2 {
             font-family: 'Playfair Display', serif;
-            font-size: 32px;
+            font-size: clamp(28px, 6vw, 48px);
             color: #28595A;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             font-weight: 600;
+            line-height: 1.3;
         }
         
-        .cta-section p {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 40px;
-            line-height: 1.8;
+        .main-content .subtitle {
+            font-size: 18px;
+            color: #F3C533;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+        
+        .main-content p {
+            font-size: 17px;
+            color: #555;
+            margin-bottom: 25px;
+            line-height: 1.9;
+            font-weight: 300;
         }
         
         .cta-button {
@@ -153,6 +169,7 @@
             box-shadow: 0 4px 15px rgba(40, 89, 90, 0.2);
             position: relative;
             overflow: hidden;
+            margin-top: 20px;
         }
         
         .cta-button::before {
@@ -177,35 +194,35 @@
             left: 0;
         }
         
-        /* Benefits Section */
-        .benefits {
+        /* Experience Section */
+        .experience {
             background: #f5f3f0;
-            padding: 60px 20px;
+            padding: 80px 20px;
         }
         
-        .benefits-container {
-            max-width: 1000px;
+        .experience-container {
+            max-width: 1100px;
             margin: 0 auto;
         }
         
-        .benefits h3 {
+        .experience h2 {
             font-family: 'Playfair Display', serif;
-            font-size: 32px;
+            font-size: clamp(28px, 6vw, 48px);
             color: #28595A;
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 60px;
             font-weight: 600;
         }
         
-        .benefits-grid {
+        .experience-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
         }
         
-        .benefit-item {
+        .experience-card {
             background: white;
-            padding: 30px;
+            padding: 40px 30px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             text-align: center;
@@ -213,38 +230,104 @@
             animation: fadeInUp 0.8s ease-out backwards;
         }
         
-        .benefit-item:nth-child(1) { animation-delay: 0.1s; }
-        .benefit-item:nth-child(2) { animation-delay: 0.2s; }
-        .benefit-item:nth-child(3) { animation-delay: 0.3s; }
+        .experience-card:nth-child(1) { animation-delay: 0.1s; }
+        .experience-card:nth-child(2) { animation-delay: 0.2s; }
+        .experience-card:nth-child(3) { animation-delay: 0.3s; }
         
-        .benefit-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(40, 89, 90, 0.1);
+        .experience-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(40, 89, 90, 0.15);
         }
         
-        .benefit-icon {
+        .experience-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .experience-card h3 {
+            color: #28595A;
+            font-size: 20px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .experience-card p {
+            color: #666;
+            font-size: 15px;
+            line-height: 1.7;
+            font-weight: 300;
+        }
+        
+        /* Why Zallure Section */
+        .why-zallure {
+            background: white;
+            padding: 80px 20px;
+        }
+        
+        .why-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .why-zallure h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 6vw, 48px);
+            color: #28595A;
+            text-align: center;
+            margin-bottom: 60px;
+            font-weight: 600;
+        }
+        
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .why-item {
+            padding: 30px;
+            background: #f5f3f0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.8s ease-out backwards;
+        }
+        
+        .why-item:nth-child(1) { animation-delay: 0.1s; }
+        .why-item:nth-child(2) { animation-delay: 0.2s; }
+        .why-item:nth-child(3) { animation-delay: 0.3s; }
+        .why-item:nth-child(4) { animation-delay: 0.4s; }
+        
+        .why-item:hover {
+            background: white;
+            box-shadow: 0 8px 20px rgba(40, 89, 90, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        .why-icon {
             font-size: 40px;
             margin-bottom: 15px;
         }
         
-        .benefit-item h4 {
+        .why-item h3 {
             color: #28595A;
             font-size: 18px;
             margin-bottom: 10px;
             font-weight: 600;
         }
         
-        .benefit-item p {
+        .why-item p {
             color: #666;
             font-size: 14px;
             line-height: 1.6;
+            font-weight: 300;
         }
         
         /* Footer */
         footer {
             background: #28595A;
             color: white;
-            padding: 40px 20px;
+            padding: 50px 20px;
             text-align: center;
             font-size: 14px;
         }
@@ -256,13 +339,22 @@
         
         .footer-content p {
             margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .footer-tagline {
+            font-size: 16px;
+            font-style: italic;
+            margin: 20px 0;
+            color: #F3C533;
+            font-weight: 400;
         }
         
         .footer-links {
-            margin-top: 20px;
+            margin-top: 25px;
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 25px;
             flex-wrap: wrap;
         }
         
@@ -270,6 +362,7 @@
             color: #F3C533;
             text-decoration: none;
             transition: color 0.3s;
+            font-weight: 500;
         }
         
         .footer-links a:hover {
@@ -299,24 +392,32 @@
                 width: 95%;
             }
             
-            .hero-content h2 {
+            .hero-content h1 {
+                font-size: 32px;
+            }
+            
+            .main-content {
+                padding: 50px 20px;
+            }
+            
+            .main-content h2 {
                 font-size: 28px;
             }
             
-            .cta-section {
-                padding: 40px 20px;
+            .experience {
+                padding: 50px 20px;
             }
             
-            .cta-section h3 {
-                font-size: 24px;
+            .experience h2 {
+                font-size: 28px;
             }
             
-            .benefits {
-                padding: 40px 20px;
+            .why-zallure {
+                padding: 50px 20px;
             }
             
-            .benefits h3 {
-                font-size: 24px;
+            .why-zallure h2 {
+                font-size: 28px;
             }
         }
     </style>
@@ -386,8 +487,8 @@ Error generating stack: `+l.message+`
     <!-- Header -->
     <header>
         <div class="header-content">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <img src="./logo.png" alt="Zallure Logo" style="height: 40px; width: auto;">
+            <div class="logo-section">
+                <img src="./logo.png" alt="Zallure Logo">
                 <div>
                     <div class="tagline">The Hotel Experience</div>
                 </div>
@@ -397,42 +498,77 @@ Error generating stack: `+l.message+`
     
     <!-- Hero Section -->
     <section class="hero">
-        <img src="https://d2xsxph8kpxj0f.cloudfront.net/310419663029245873/g46GJbRyKveU3WvBqFiKUu/zallure-hero-bed-VKVdmDj9d6fwFM9vfqq2uf.webp" alt="Cama Premium Zallure" class="hero-image">
+        <img src="https://d2xsxph8kpxj0f.cloudfront.net/310419663029245873/g46GJbRyKveU3WvBqFiKUu/zallure-hero-bed-VKVdmDj9d6fwFM9vfqq2uf.webp" alt="The Hotel Experience - Zallure" class="hero-image">
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h2>Conforto Premium para Seus Hóspedes</h2>
-            <p>Qualidade hoteleira que faz a diferença</p>
+            <h1>Durma como em um Hotel Cinco Estrelas</h1>
+            <p>Leve para sua casa o conforto e a sofisticação inspirados nos melhores hotéis</p>
         </div>
     </section>
     
-    <!-- CTA Section -->
-    <section class="cta-section">
-        <div class="cta-container">
-            <h3>Produtos de Cama Zallure</h3>
-            <p>Transforme a experiência de seus hóspedes com nossa coleção premium de roupas de cama. Desenvolvidas com os melhores materiais, nossas peças combinam elegância, durabilidade e conforto incomparável.</p>
-            <a href="https://www.amazon.com.br/s?me=A1A4OKNWC2CQ6O&marketplaceID=A2Q3Y263D00KWC" class="cta-button">Explorar Produtos</a>
+    <!-- Main Content Section -->
+    <section class="main-content">
+        <div class="content-container">
+            <div class="subtitle">A Zallure nasceu para você</div>
+            <h2>Transforme sua Casa em uma Experiência de Hotel</h2>
+            <p>
+                A Zallure nasceu para levar a experiência dos melhores hotéis para dentro da sua casa. Selecionamos produtos premium inspirados na hotelaria, combinando conforto, elegância, qualidade e durabilidade para transformar o descanso em uma experiência única.
+            </p>
+            <p>
+                Descubra The Hotel Experience da Zallure. Produtos premium que proporcionam conforto, sofisticação e bem-estar em todos os momentos.
+            </p>
+            <a href="https://www.amazon.com.br/s?me=A1A4OKNWC2CQ6O&marketplaceID=A2Q3Y263D00KWC" class="cta-button">Explorar Coleção</a>
         </div>
     </section>
     
-    <!-- Benefits Section -->
-    <section class="benefits">
-        <div class="benefits-container">
-            <h3>Por Que Escolher Zallure?</h3>
-            <div class="benefits-grid">
-                <div class="benefit-item">
-                    <div class="benefit-icon">✨</div>
-                    <h4>Qualidade Premium</h4>
-                    <p>Materiais de primeira qualidade selecionados para durabilidade e conforto máximo</p>
+    <!-- Experience Section -->
+    <section class="experience">
+        <div class="experience-container">
+            <h2>A Experiência Zallure</h2>
+            <div class="experience-grid">
+                <div class="experience-card">
+                    <div class="experience-icon">✨</div>
+                    <h3>Conforto Premium</h3>
+                    <p>Materiais de primeira qualidade selecionados para proporcionar o máximo conforto e bem-estar</p>
                 </div>
-                <div class="benefit-item">
-                    <div class="benefit-icon">🛏️</div>
-                    <h4>Conforto Hoteleiro</h4>
-                    <p>Desenvolvido especificamente para a indústria hoteleira com padrões internacionais</p>
+                <div class="experience-card">
+                    <div class="experience-icon">🏨</div>
+                    <h3>Inspiração Hoteleira</h3>
+                    <p>Desenvolvido com os padrões de sofisticação dos melhores hotéis do mundo</p>
                 </div>
-                <div class="benefit-item">
-                    <div class="benefit-icon">💎</div>
-                    <h4>Elegância Sofisticada</h4>
-                    <p>Design refinado que eleva a experiência de seus hóspedes e a imagem do seu estabelecimento</p>
+                <div class="experience-card">
+                    <div class="experience-icon">💎</div>
+                    <h3>Elegância Sofisticada</h3>
+                    <p>Design refinado que eleva a experiência e transforma seu ambiente em um refúgio de luxo</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Why Zallure Section -->
+    <section class="why-zallure">
+        <div class="why-container">
+            <h2>Por Que Escolher Zallure?</h2>
+            <div class="why-grid">
+                <div class="why-item">
+                    <div class="why-icon">🛏️</div>
+                    <h3>Experiência Hoteleira</h3>
+                    <p>Conforto que inspira momentos inesquecíveis todos os dias</p>
+                </div>
+                <div class="why-item">
+                    <div class="why-icon">⭐</div>
+                    <h3>Qualidade Premium</h3>
+                    <p>Produtos selecionados com rigor para garantir durabilidade e conforto máximo</p>
+                </div>
+                <div class="why-item">
+                    <div class="why-icon">🌟</div>
+                    <h3>Sofisticação</h3>
+                    <p>Design elegante que reflete o padrão dos melhores hotéis internacionais</p>
+                </div>
+                <div class="why-item">
+                    <div class="why-icon">💫</div>
+                    <h3>Bem-estar Total</h3>
+                    <p>Transforme seu descanso em uma experiência de luxo e tranquilidade</p>
                 </div>
             </div>
         </div>
@@ -442,7 +578,8 @@ Error generating stack: `+l.message+`
     <footer>
         <div class="footer-content">
             <p>&copy; 2024 Zallure. Todos os direitos reservados.</p>
-            <p>Produtos de Cama Premium para Hotelaria</p>
+            <div class="footer-tagline">"O conforto de hotel, todos os dias."</div>
+            <p>The Hotel Experience para sua casa</p>
             <div class="footer-links">
                 <a href="https://www.amazon.com.br/s?me=A1A4OKNWC2CQ6O&marketplaceID=A2Q3Y263D00KWC">Loja Amazon</a>
                 <a href="mailto:zallure1@gmail.com">Contato</a>
