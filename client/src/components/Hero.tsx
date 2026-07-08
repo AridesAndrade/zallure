@@ -15,9 +15,14 @@ export default function Hero() {
           {/* Card Informativo */}
           <div className="bg-[#F6F6F2] rounded-lg p-8 md:p-10 space-y-6 order-2 md:order-1 shadow-sm hover:shadow-md transition-shadow duration-300">
             {/* Headline */}
-            <h1 className="text-4xl md:text-5xl font-montserrat font-bold text-[#28595A] leading-tight">
-              Produtos que realmente melhoram sua vida
-            </h1>
+            <div className="space-y-2">
+              <h1 className="text-4xl md:text-5xl font-montserrat font-bold text-[#28595A] leading-tight">
+                O Toque dos Melhores Hotéis na Sua Cama
+              </h1>
+              <p className="text-xl font-medium text-[#28595A]">
+                Qualidade e durabilidade hoteleira para o seu dia a dia
+              </p>
+            </div>
 
             {/* Rating */}
             <div className="flex items-center gap-2">
@@ -35,20 +40,23 @@ export default function Hero() {
             </div>
 
             {/* Descrição */}
-            <p className="text-base text-[#556565] leading-relaxed">
-              Selecionamos produtos inteligentes, úteis e de alta qualidade para
-              melhorar seu dia a dia. Inovação, praticidade e confiança em cada
-              escolha.
-            </p>
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold text-[#28595A]">Coleção Hotel Home Zallure</h2>
+              <p className="text-base text-[#556565] leading-relaxed">
+                Leve para o seu quarto o segredo das melhores estadias. Nossa linha de enxoval premium combina o toque acetinado e o frescor das camas de hotel com a alta durabilidade exigida pelo mercado profissional. Perfeito para sua casa, essencial para sua pousada.
+              </p>
+            </div>
 
             {/* Benefits */}
             <ul className="space-y-3">
-              {benefits.map((benefit, idx) => (
-                <li key={idx} className="flex items-start gap-3">
-                  <Check className="h-5 w-5 text-[#28595A] flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-[#556565]">{benefit}</span>
-                </li>
-              ))}
+              <li className="flex items-start gap-3">
+                <Check className="h-5 w-5 text-[#28595A] flex-shrink-0 mt-0.5" />
+                <span className="text-sm text-[#556565]">O padrão dos melhores hotéis e Airbnbs, desenhado para resistir a lavagens constantes mantendo o toque macio.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <Check className="h-5 w-5 text-[#28595A] flex-shrink-0 mt-0.5" />
+                <span className="text-sm text-[#556565]">Eleva a estética do seu quarto e transforma o seu momento de descanso em uma experiência 5 estrelas.</span>
+              </li>
             </ul>
 
             {/* CTA Principal */}

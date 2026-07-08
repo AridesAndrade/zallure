@@ -249,10 +249,37 @@
         }
         
         .footer-content {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         
+        .footer-top {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .footer-logo-container {
+            flex: 1;
+        }
+
+        .luna-lum-selo {
+            height: 80px;
+            width: auto;
+            margin-bottom: 10px;
+        }
+        
+        .footer-info {
+            flex: 2;
+            text-align: center;
+        }
+
         .footer-content p {
             margin-bottom: 10px;
         }
@@ -317,6 +344,12 @@
             .benefits h3 {
                 font-size: 24px;
             }
+
+            .footer-top {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -336,16 +369,16 @@
         <img src="https://d2xsxph8kpxj0f.cloudfront.net/310419663029245873/g46GJbRyKveU3WvBqFiKUu/zallure-hero-bed-VKVdmDj9d6fwFM9vfqq2uf.webp" alt="Cama Premium Zallure" class="hero-image">
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h2>Conforto Premium para Seus Hóspedes</h2>
-            <p>Qualidade hoteleira que faz a diferença</p>
+            <h2>O Toque dos Melhores Hotéis na Sua Cama</h2>
+            <p>Qualidade e durabilidade hoteleira para o seu dia a dia</p>
         </div>
     </section>
     
     <!-- CTA Section -->
     <section class="cta-section">
         <div class="cta-container">
-            <h3>Produtos de Cama Zallure</h3>
-            <p>Transforme a experiência de seus hóspedes com nossa coleção premium de roupas de cama. Desenvolvidas com os melhores materiais, nossas peças combinam elegância, durabilidade e conforto incomparável.</p>
+            <h3>Coleção Hotel Home Zallure</h3>
+            <p>Leve para o seu quarto o segredo das melhores estadias. Nossa linha de enxoval premium combina o toque acetinado e o frescor das camas de hotel com a alta durabilidade exigida pelo mercado profissional. Perfeito para sua casa, essencial para sua pousada.</p>
             <a href="https://www.amazon.com.br/s?me=A1A4OKNWC2CQ6O&marketplaceID=A2Q3Y263D00KWC" class="cta-button">Explorar Produtos</a>
         </div>
     </section>
@@ -363,12 +396,12 @@
                 <div class="benefit-item">
                     <div class="benefit-icon">🛏️</div>
                     <h4>Conforto Hoteleiro</h4>
-                    <p>Desenvolvido especificamente para a indústria hoteleira com padrões internacionais</p>
+                    <p>O padrão dos melhores hotéis e Airbnbs, desenhado para resistir a lavagens constantes mantendo o toque macio.</p>
                 </div>
                 <div class="benefit-item">
                     <div class="benefit-icon">💎</div>
                     <h4>Elegância Sofisticada</h4>
-                    <p>Design refinado que eleva a experiência de seus hóspedes e a imagem do seu estabelecimento</p>
+                    <p>Design refinado que eleva a estética do seu quarto e transforma o seu momento de descanso em uma experiência 5 estrelas.</p>
                 </div>
             </div>
         </div>
@@ -377,8 +410,16 @@
     <!-- Footer -->
     <footer>
         <div class="footer-content">
-            <p>&copy; 2024 Zallure. Todos os direitos reservados.</p>
-            <p>Produtos de Cama Premium para Hotelaria</p>
+            <div class="footer-top">
+                <div class="footer-logo-container">
+                    <img src="/luna-lum-new.png" alt="Selo Luna LUM" class="luna-lum-selo">
+                </div>
+                <div class="footer-info">
+                    <p>&copy; 2026 Zallure. Todos os direitos reservados.</p>
+                    <p>Produtos de Cama Premium para Hotelaria</p>
+                </div>
+                <div style="flex: 1;"></div> <!-- Spacer for alignment -->
+            </div>
             <div class="footer-links">
                 <a href="https://www.amazon.com.br/s?me=A1A4OKNWC2CQ6O&marketplaceID=A2Q3Y263D00KWC">Loja Amazon</a>
                 <a href="mailto:contato@zallure.com.br">Contato</a>
