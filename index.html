@@ -267,12 +267,22 @@
 
         .footer-logo-container {
             flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .footer-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 2px;
         }
 
         .luna-lum-selo {
             height: 80px;
             width: auto;
-            margin-bottom: 10px;
         }
         
         .footer-info {
@@ -412,6 +422,7 @@
         <div class="footer-content">
             <div class="footer-top">
                 <div class="footer-logo-container">
+                    <div class="footer-logo">ZALLURE</div>
                     <img src="/luna-lum-new.png" alt="Selo Luna LUM" class="luna-lum-selo">
                 </div>
                 <div class="footer-info">

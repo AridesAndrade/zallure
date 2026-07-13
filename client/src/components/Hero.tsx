@@ -57,6 +57,14 @@ export default function Hero() {
                 <Check className="h-5 w-5 text-[#28595A] flex-shrink-0 mt-0.5" />
                 <span className="text-sm text-[#556565]">Eleva a estética do seu quarto e transforma o seu momento de descanso em uma experiência 5 estrelas.</span>
               </li>
+              <li className="flex items-start gap-3">
+                <Check className="h-5 w-5 text-[#28595A] flex-shrink-0 mt-0.5" />
+                <span className="text-sm text-[#556565]">Praticidade para seu dia a dia</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <Check className="h-5 w-5 text-[#28595A] flex-shrink-0 mt-0.5" />
+                <span className="text-sm text-[#556565]">Suporte e garantia confiáveis</span>
+              </li>
             </ul>
 
             {/* CTA Principal */}

@@ -14,7 +14,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {/* Brand Info */}
           <div className="space-y-4">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-6">
               <img
                 src="/manus-storage/LogoZallureretangular_13e7f00b.png"
                 alt="Zallure Logo"
@@ -23,7 +23,7 @@ export default function Footer() {
               <img
                 src="/luna-lum-new.png"
                 alt="Selo Luna LUM"
-                className="h-16 w-auto self-start"
+                className="h-20 w-auto self-start"
               />
             </div>
             <p className="text-sm text-[#556565]">

@@ -333,10 +333,44 @@
         }
         
         .footer-content {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         
+        .footer-top {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .footer-logo-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .footer-logo-img {
+            height: 40px;
+            width: auto;
+        }
+
+        .luna-lum-selo {
+            height: 80px;
+            width: auto;
+        }
+        
+        .footer-info {
+            flex: 2;
+            text-align: center;
+        }
+
         .footer-content p {
             margin-bottom: 10px;
             font-weight: 300;
@@ -419,6 +453,12 @@
             .why-zallure h2 {
                 font-size: 28px;
             }
+
+            .footer-top {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -440,8 +480,8 @@
         <img src="https://d2xsxph8kpxj0f.cloudfront.net/310419663029245873/g46GJbRyKveU3WvBqFiKUu/zallure-hero-bed-VKVdmDj9d6fwFM9vfqq2uf.webp" alt="The Hotel Experience - Zallure" class="hero-image">
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h1>Durma com o Conforto de um Hotel Cinco Estrelas</h1>
-            <p>Leve para sua casa o conforto e a sofisticação inspirados nos melhores hotéis</p>
+            <h1>O Toque dos Melhores Hotéis na Sua Cama</h1>
+            <p>Qualidade e durabilidade hoteleira para o seu dia a dia</p>
         </div>
     </section>
     
@@ -449,9 +489,9 @@
     <section class="main-content">
         <div class="content-container">
             <div class="subtitle">A Zallure nasceu para você</div>
-            <h2>Transforme sua Casa em uma Experiência de Hotel</h2>
+            <h2>Coleção Hotel Home Zallure</h2>
             <p>
-                A Zallure nasceu para levar a experiência dos melhores hotéis para dentro da sua casa. Selecionamos produtos premium inspirados na hotelaria, combinando conforto, elegância, qualidade e durabilidade para transformar o descanso em uma experiência única.
+                Leve para o seu quarto o segredo das melhores estadias. Nossa linha de enxoval premium combina o toque acetinado e o frescor das camas de hotel com a alta durabilidade exigida pelo mercado profissional. Perfeito para sua casa, essencial para sua pousada.
             </p>
             <a href="https://www.amazon.com.br/s?me=A1A4OKNWC2CQ6O&marketplaceID=A2Q3Y263D00KWC" class="cta-button">Explorar Coleção</a>
         </div>
@@ -469,13 +509,13 @@
                 </div>
                 <div class="experience-card">
                     <div class="experience-icon">🏨</div>
-                    <h3>Inspiração Hoteleira</h3>
-                    <p>Desenvolvido com os padrões de sofisticação dos melhores hotéis do mundo</p>
+                    <h3>O padrão dos melhores hotéis e Airbnbs</h3>
+                    <p>Desenhado para resistir a lavagens constantes mantendo o toque macio.</p>
                 </div>
                 <div class="experience-card">
                     <div class="experience-icon">💎</div>
-                    <h3>Qualidade e Durabilidade</h3>
-                    <p>Produtos desenhados para resistir ao tempo mantendo a elegância e o toque macio</p>
+                    <h3>Experiência 5 estrelas</h3>
+                    <p>Eleva a estética do seu quarto e transforma o seu momento de descanso em uma experiência 5 estrelas.</p>
                 </div>
             </div>
         </div>
@@ -513,9 +553,18 @@
     <!-- Footer -->
     <footer>
         <div class="footer-content">
-            <p>&copy; 2026 Zallure. Todos os direitos reservados.</p>
-            <div class="footer-tagline">"O conforto de hotel, todos os dias."</div>
-            <p>The Hotel Experience para sua casa</p>
+            <div class="footer-top">
+                <div class="footer-logo-container">
+                    <img src="/logo.png" alt="Zallure Logo" class="footer-logo-img">
+                    <img src="/luna-lum-new.png" alt="Selo Luna LUM" class="luna-lum-selo">
+                </div>
+                <div class="footer-info">
+                    <p>&copy; 2026 Zallure. Todos os direitos reservados.</p>
+                    <div class="footer-tagline">"O conforto de hotel, todos os dias."</div>
+                    <p>The Hotel Experience para sua casa</p>
+                </div>
+                <div style="flex: 1;"></div>
+            </div>
             <div class="footer-links">
                 <a href="https://www.amazon.com.br/s?me=A1A4OKNWC2CQ6O&marketplaceID=A2Q3Y263D00KWC">Loja Amazon</a>
                 <a href="mailto:zallure1@gmail.com">Contato</a>
