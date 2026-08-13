@@ -69,7 +69,7 @@ export default function Hero() {
 
             {/* CTA Principal */}
             <a
-              href="https://www.amazon.com.br/s?me=A1A4OKNWC2CQ6O&marketplaceID=A2Q3Y263D00KWC"
+              href="https://www.zallure.com.br/"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block bg-[#F3C533] text-[#111111] hover:bg-[#E0B82A] font-semibold text-base h-12 px-8 transition-all duration-200 active:scale-95 btn-hover-scale rounded"
