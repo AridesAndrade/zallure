@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="/favicon.png" />
     <style>
+        /* Direção visual: hotel boutique editorial, com verde petróleo, branco quente e dourado suave. A composição privilegia imagens amplas, respiro e assimetria refinada. */
         * { 
             margin: 0; 
             padding: 0; 
@@ -62,37 +63,36 @@
         .hero {
             position: relative;
             width: 100%;
-            height: auto;
+            height: min(74vh, 760px);
+            min-height: 540px;
             overflow: hidden;
+            background: #102e30;
         }
         
         .hero-image {
             width: 100%;
-            height: auto;
+            height: 100%;
             display: block;
             object-fit: cover;
+            object-position: center;
         }
         
         .hero-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(40, 89, 90, 0.25) 0%, rgba(243, 197, 51, 0.15) 100%);
+            inset: 0;
+            background: linear-gradient(90deg, rgba(9, 34, 35, 0.82) 0%, rgba(9, 34, 35, 0.58) 36%, rgba(9, 34, 35, 0.08) 78%), linear-gradient(180deg, rgba(9, 34, 35, 0.05) 40%, rgba(9, 34, 35, 0.32) 100%);
             pointer-events: none;
         }
         
         .hero-content {
             position: absolute;
             top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
+            left: clamp(24px, 8vw, 120px);
+            transform: translateY(-50%);
+            text-align: left;
             color: white;
             z-index: 10;
-            width: 90%;
-            max-width: 700px;
+            width: min(90%, 580px);
             text-shadow: 0 3px 15px rgba(0,0,0,0.4);
             animation: fadeInUp 1s ease-out;
         }
@@ -112,6 +112,18 @@
             letter-spacing: 0.5px;
             margin-bottom: 0;
             line-height: 1.6;
+            max-width: 500px;
+        }
+
+        .hero-content::before {
+            content: 'The Hotel Experience';
+            display: block;
+            margin-bottom: 18px;
+            color: #F3C533;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
         }
         
         /* Main Content Section */
@@ -194,6 +206,119 @@
             left: 0;
         }
         
+        /* Collection Gallery */
+        .collection-section {
+            background: #102e30;
+            color: white;
+            padding: clamp(70px, 9vw, 120px) 20px;
+        }
+
+        .collection-container {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .collection-intro {
+            max-width: 700px;
+            margin-bottom: 44px;
+        }
+
+        .collection-kicker {
+            color: #F3C533;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .collection-intro h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 5vw, 56px);
+            line-height: 1.1;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .collection-intro p {
+            color: rgba(255, 255, 255, 0.76);
+            max-width: 620px;
+            font-size: 16px;
+            line-height: 1.85;
+            font-weight: 300;
+        }
+
+        .collection-gallery {
+            display: grid;
+            grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.65fr);
+            grid-template-rows: repeat(2, minmax(260px, 1fr));
+            gap: 18px;
+        }
+
+        .collection-card {
+            position: relative;
+            min-height: 260px;
+            overflow: hidden;
+            background: #1d4446;
+            border: 1px solid rgba(243, 197, 51, 0.2);
+        }
+
+        .collection-card.feature {
+            grid-row: 1 / span 2;
+            min-height: 540px;
+            border-radius: 2px 34px 2px 34px;
+        }
+
+        .collection-card.detail {
+            border-radius: 34px 2px 34px 2px;
+        }
+
+        .collection-card.bath {
+            border-radius: 2px 2px 34px 2px;
+        }
+
+        .collection-card img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+            transition: transform 500ms cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .collection-card.feature img {
+            object-position: center;
+        }
+
+        .collection-card.detail img,
+        .collection-card.bath img {
+            object-position: center;
+        }
+
+        .collection-card:hover img {
+            transform: scale(1.035);
+        }
+
+        .collection-card figcaption {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 70px 24px 22px;
+            color: white;
+            background: linear-gradient(180deg, transparent, rgba(8, 25, 26, 0.84));
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .collection-card figcaption strong {
+            display: block;
+            color: #F3C533;
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
         /* Experience Section */
         .experience {
             background: #f5f3f0;
@@ -422,12 +547,45 @@
                 gap: 10px;
             }
             
+            .hero {
+                height: 68vh;
+                min-height: 500px;
+            }
+
+            .hero-image {
+                object-position: 60% center;
+            }
+
+            .hero-overlay {
+                background: linear-gradient(180deg, rgba(9, 34, 35, 0.22) 0%, rgba(9, 34, 35, 0.7) 100%);
+            }
+
             .hero-content {
-                width: 95%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                text-align: center;
+                width: 88%;
             }
             
             .hero-content h1 {
                 font-size: 32px;
+            }
+
+            .hero-content p {
+                margin: 0 auto;
+            }
+
+            .collection-gallery {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+            }
+
+            .collection-card.feature,
+            .collection-card.detail,
+            .collection-card.bath {
+                grid-row: auto;
+                min-height: 420px;
+                border-radius: 2px 24px 2px 24px;
             }
             
             .main-content {
@@ -477,7 +635,7 @@
     
     <!-- Hero Section -->
     <section class="hero">
-        <img src="https://d2xsxph8kpxj0f.cloudfront.net/310419663029245873/g46GJbRyKveU3WvBqFiKUu/zallure-hero-bed-VKVdmDj9d6fwFM9vfqq2uf.webp" alt="The Hotel Experience - Zallure" class="hero-image">
+        <img src="/luna-lum-quarto.webp" alt="Quarto de hotel sofisticado com cama premium Zallure" class="hero-image">
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <h1>O Toque dos Melhores Hotéis na Sua Cama</h1>
@@ -497,6 +655,31 @@
         </div>
     </section>
     
+    <!-- Collection Gallery -->
+    <section class="collection-section" aria-labelledby="collection-title">
+        <div class="collection-container">
+            <div class="collection-intro">
+                <div class="collection-kicker">Detalhes que transformam</div>
+                <h2 id="collection-title">A atmosfera dos melhores hotéis, dentro da sua rotina.</h2>
+                <p>Texturas macias, acabamentos precisos e uma composição que convida ao descanso. Uma curadoria pensada para tornar cada ambiente mais acolhedor, elegante e memorável.</p>
+            </div>
+            <div class="collection-gallery">
+                <figure class="collection-card feature">
+                    <img src="/luna-lum-enxoval.webp" alt="Enxoval premium organizado sobre fundo verde petróleo" loading="lazy">
+                    <figcaption><strong>Uma coleção para viver bem</strong>Enxoval completo com presença discreta e acabamento inspirado na hotelaria.</figcaption>
+                </figure>
+                <figure class="collection-card detail">
+                    <img src="/luna-lum-detalhe-cama.webp" alt="Detalhe de roupa de cama branca com acabamento dourado" loading="lazy">
+                    <figcaption><strong>O detalhe faz a diferença</strong>Linhas delicadas e toque suave para um quarto mais refinado.</figcaption>
+                </figure>
+                <figure class="collection-card bath">
+                    <img src="/luna-lum-banho.webp" alt="Toalhas e roupão brancos em banheiro sofisticado" loading="lazy">
+                    <figcaption><strong>Conforto em todos os momentos</strong>O ritual de banho com a mesma sensação de cuidado de um hotel.</figcaption>
+                </figure>
+            </div>
+        </div>
+    </section>
+
     <!-- Experience Section -->
     <section class="experience">
         <div class="experience-container">
