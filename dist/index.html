@@ -319,6 +319,106 @@
             margin-bottom: 4px;
         }
 
+        /* Complementary Products */
+        .products-section {
+            background: #f5f3f0;
+            padding: clamp(70px, 9vw, 110px) 20px;
+        }
+
+        .products-container {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .products-header {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 30px;
+            margin-bottom: 42px;
+        }
+
+        .products-header h2 {
+            max-width: 620px;
+            color: #28595A;
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(30px, 5vw, 52px);
+            line-height: 1.12;
+            font-weight: 600;
+        }
+
+        .products-header p {
+            max-width: 330px;
+            color: #667170;
+            font-size: 15px;
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .product-card {
+            overflow: hidden;
+            background: white;
+            border-top: 2px solid #F3C533;
+            box-shadow: 0 8px 24px rgba(40, 89, 90, 0.08);
+            transition: transform 220ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 220ms cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .product-card:nth-child(1),
+        .product-card:nth-child(4) {
+            border-radius: 2px 24px 2px 2px;
+        }
+
+        .product-card:nth-child(2),
+        .product-card:nth-child(5) {
+            border-radius: 24px 2px 2px 2px;
+        }
+
+        .product-card:nth-child(3) {
+            border-radius: 2px 2px 24px 2px;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 32px rgba(40, 89, 90, 0.14);
+        }
+
+        .product-card img {
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            display: block;
+            object-fit: cover;
+        }
+
+        .product-card.wide-image img {
+            object-position: center;
+        }
+
+        .product-card-body {
+            padding: 18px 16px 20px;
+        }
+
+        .product-card-body h3 {
+            color: #28595A;
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            line-height: 1.2;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .product-card-body p {
+            color: #697473;
+            font-size: 13px;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
         /* Experience Section */
         .experience {
             background: #f5f3f0;
@@ -580,12 +680,36 @@
                 grid-template-rows: auto;
             }
 
+            .products-header {
+                display: block;
+            }
+
+            .products-header p {
+                margin-top: 18px;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .product-card:nth-child(1),
+            .product-card:nth-child(2),
+            .product-card:nth-child(3),
+            .product-card:nth-child(4),
+            .product-card:nth-child(5) {
+                border-radius: 2px 18px 2px 2px;
+            }
+
             .collection-card.feature,
             .collection-card.detail,
             .collection-card.bath {
                 grid-row: auto;
                 min-height: 420px;
                 border-radius: 2px 24px 2px 24px;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
             }
             
             .main-content {
@@ -737,6 +861,56 @@ Error generating stack: `+l.message+`
                     <img src="./luna-lum-banho.webp" alt="Toalhas e roupão brancos em banheiro sofisticado" loading="lazy">
                     <figcaption><strong>Conforto em todos os momentos</strong>O ritual de banho com a mesma sensação de cuidado de um hotel.</figcaption>
                 </figure>
+            </div>
+        </div>
+    </section>
+
+    <!-- Complementary Products -->
+    <section class="products-section" aria-labelledby="products-title">
+        <div class="products-container">
+            <div class="products-header">
+                <div>
+                    <div class="collection-kicker">Camadas de conforto</div>
+                    <h2 id="products-title">Os detalhes que completam a experiência.</h2>
+                </div>
+                <p>Elementos escolhidos para vestir, proteger e finalizar o quarto com a mesma atenção aos detalhes de uma boa hospedagem.</p>
+            </div>
+            <div class="products-grid">
+                <article class="product-card">
+                    <img src="./luna-lum-capa-edredom.webp" alt="Capa de edredom branca com acabamento dourado" loading="lazy">
+                    <div class="product-card-body">
+                        <h3>Capa de edredom</h3>
+                        <p>Leveza, acabamento preciso e a estética limpa de uma cama bem preparada.</p>
+                    </div>
+                </article>
+                <article class="product-card wide-image">
+                    <img src="./luna-lum-manta-piquet.webp" alt="Manta piquet branca com acabamento dourado sobre cama de hotel" loading="lazy">
+                    <div class="product-card-body">
+                        <h3>Manta piquet</h3>
+                        <p>Textura delicada para acrescentar aconchego e elegância à composição.</p>
+                    </div>
+                </article>
+                <article class="product-card">
+                    <img src="./luna-lum-protetor-colchao.webp" alt="Protetor de colchão branco em quarto sofisticado" loading="lazy">
+                    <div class="product-card-body">
+                        <h3>Proteção para o colchão</h3>
+                        <p>Uma camada discreta de cuidado para preservar o conforto por mais tempo.</p>
+                    </div>
+                </article>
+                <article class="product-card wide-image">
+                    <img src="./luna-lum-manta-cashmere.webp" alt="Manta macia de microfibra sobre cama de hotel" loading="lazy">
+                    <div class="product-card-body">
+                        <h3>Manta macia</h3>
+                        <p>Toque envolvente para noites acolhedoras e momentos de pausa.</p>
+                    </div>
+                </article>
+                <article class="product-card wide-image">
+                    <img src="./luna-lum-peseira.webp" alt="Peseira de tecido estruturado em cama de hotel" loading="lazy">
+                    <div class="product-card-body">
+                        <h3>Peseira estruturada</h3>
+                        <p>O acabamento final que organiza o quarto e valoriza a cama.</p>
+                    </div>
+                </article>
             </div>
         </div>
     </section>
