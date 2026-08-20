@@ -14,7 +14,19 @@ from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from auth import authenticate_user, create_user, init_users, issue_session, list_users, set_user_active, set_user_password, verify_session
+from auth import (
+    authenticate_user,
+    create_user,
+    delete_user,
+    init_users,
+    issue_session,
+    list_users,
+    rename_user,
+    set_user_active,
+    set_user_environment,
+    set_user_password,
+    verify_session,
+)
 
 try:
     from crewai import Agent, Crew, Process, Task
@@ -73,7 +85,16 @@ class LoginRequest(BaseModel):
 class UserCreateRequest(BaseModel):
     username: str = Field(min_length=3, max_length=80, pattern=r"^[a-zA-Z0-9_.-]+$")
     role: str = Field(min_length=2, max_length=40)
+    environment: str = Field(default="gestor", pattern="^(gestor|developer)$")
     password: str = Field(min_length=1, max_length=200)
+
+
+class UserRenameRequest(BaseModel):
+    new_username: str = Field(min_length=3, max_length=80, pattern=r"^[a-zA-Z0-9_.-]+$")
+
+
+class UserEnvironmentRequest(BaseModel):
+    environment: str = Field(pattern="^(gestor|developer)$")
 
 
 class UserPasswordRequest(BaseModel):
@@ -234,11 +255,11 @@ def login(request: LoginRequest) -> dict[str, Any]:
     user = authenticate_user(request.username, request.password)
     if not user:
         raise HTTPException(status_code=401, detail="Usuário ou senha inválidos")
-    if user["role"] != "Master":
-        audit("auth.login", user["username"], {"role": user["role"], "mode": "operational"})
+    if user["role"] != "Master" or user.get("environment") != "developer":
+        audit("auth.login", user["username"], {"role": user["role"], "environment": user.get("environment", "gestor"), "mode": "operational"})
         return {"authenticated": True, "mode": "operational", "user": user}
     token = issue_session(user)
-    audit("auth.login", user["username"], {"role": user["role"], "mode": "developer"})
+    audit("auth.login", user["username"], {"role": user["role"], "environment": user["environment"], "mode": "developer"})
     return {"authenticated": True, "mode": "developer", "user": user, "token": token}
 
 
@@ -255,8 +276,10 @@ def users() -> dict[str, Any]:
 
 @app.post("/api/users", dependencies=[Depends(require_master)])
 def add_user(request: UserCreateRequest) -> dict[str, Any]:
+    if request.environment == "developer" and request.role != "Master":
+        raise HTTPException(status_code=400, detail="Somente usuários Master podem acessar o ambiente Desenvolvedor")
     try:
-        user = create_user(request.username, request.role, request.password)
+        user = create_user(request.username, request.role, request.environment, request.password)
     except sqlite3.IntegrityError:
         raise HTTPException(status_code=409, detail="Usuário já existe") from None
     audit("user.create", "master", {"username": user["username"], "role": user["role"]})
@@ -281,6 +304,43 @@ def change_user_status(username: str, request: UserStatusRequest) -> dict[str, b
         raise HTTPException(status_code=404, detail="Usuário não encontrado") from None
     audit("user.status.update", "master", {"username": username, "active": request.active})
     return {"updated": True}
+
+
+@app.patch("/api/users/{username}/environment", dependencies=[Depends(require_master)])
+def change_user_environment(username: str, request: UserEnvironmentRequest) -> dict[str, bool]:
+    try:
+        current = next(user for user in list_users() if user["username"] == username.strip().lower())
+        if request.environment == "developer" and current["role"] != "Master":
+            raise HTTPException(status_code=400, detail="Somente usuários Master podem acessar o ambiente Desenvolvedor")
+        set_user_environment(username, request.environment)
+    except StopIteration:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado") from None
+    audit("user.environment.update", "master", {"username": username, "environment": request.environment})
+    return {"updated": True}
+
+
+@app.patch("/api/users/{username}/rename", dependencies=[Depends(require_master)])
+def rename_existing_user(username: str, request: UserRenameRequest) -> dict[str, Any]:
+    try:
+        renamed = rename_user(username, request.new_username)
+    except sqlite3.IntegrityError:
+        raise HTTPException(status_code=409, detail="Novo nome de usuário já existe") from None
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado") from None
+    audit("user.rename", "master", {"username": username, "new_username": renamed["username"]})
+    return {"updated": True, **renamed}
+
+
+@app.delete("/api/users/{username}", dependencies=[Depends(require_master)])
+def remove_existing_user(username: str) -> dict[str, bool]:
+    try:
+        delete_user(username)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from None
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado") from None
+    audit("user.delete", "master", {"username": username})
+    return {"deleted": True}
 
 
 @app.get("/api/drive/overview", dependencies=[Depends(require_master)])
