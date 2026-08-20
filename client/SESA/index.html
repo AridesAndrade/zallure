@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="googlebot" content="noindex, nofollow, noarchive" />
+    <title>SESA | Ambiente de Testes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --ink: #102b2d;
+        --muted: #6c7d7d;
+        --line: #d9e4e1;
+        --paper: #f5f8f6;
+        --card: #ffffff;
+        --teal: #185d5a;
+        --teal-dark: #0e3938;
+        --aqua: #dff1ec;
+        --gold: #d7a83e;
+        --shadow: 0 18px 50px rgba(16, 43, 45, .10);
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-width: 320px; color: var(--ink); background: var(--paper); font-family: Manrope, system-ui, sans-serif; }
+      button, textarea { font: inherit; }
+      .shell { min-height: 100vh; display: grid; grid-template-columns: 290px minmax(0, 1fr); }
+      aside { position: relative; overflow: hidden; padding: 30px 24px; color: #f7fffc; background: linear-gradient(155deg, var(--teal-dark), #184e4c 58%, #286b65); }
+      aside::after { content: ''; position: absolute; width: 260px; height: 260px; right: -130px; bottom: -100px; border: 1px solid rgba(255,255,255,.16); border-radius: 50%; box-shadow: 0 0 0 24px rgba(255,255,255,.04), 0 0 0 48px rgba(255,255,255,.03); }
+      .brand { position: relative; z-index: 1; display: flex; align-items: center; gap: 12px; margin-bottom: 62px; }
+      .brand-mark { display: grid; place-items: center; width: 42px; height: 42px; color: var(--teal-dark); background: #effaf4; border-radius: 13px; font-size: 20px; font-weight: 800; }
+      .brand-name { font-size: 17px; font-weight: 800; letter-spacing: .04em; }
+      .brand-sub { margin-top: 2px; color: rgba(247,255,252,.66); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+      .eyebrow { margin: 0 0 14px; color: #b9dfd2; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+      aside h1 { max-width: 220px; margin: 0; color: #f7fffc; font-size: 28px; line-height: 1.16; letter-spacing: -.04em; }
+      .intro { max-width: 220px; margin: 18px 0 0; color: rgba(247,255,252,.72); font-size: 13px; line-height: 1.7; }
+      .status-card { position: absolute; z-index: 1; right: 24px; bottom: 28px; left: 24px; padding: 15px; border: 1px solid rgba(255,255,255,.15); background: rgba(6, 35, 34, .22); border-radius: 14px; }
+      .status-label { display: flex; align-items: center; gap: 8px; color: #d7f5e9; font-size: 11px; font-weight: 700; }
+      .dot { width: 7px; height: 7px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 0 4px rgba(215,168,62,.16); }
+      .status-card p { margin: 10px 0 0; color: rgba(247,255,252,.62); font-size: 11px; line-height: 1.5; }
+      main { display: flex; min-width: 0; flex-direction: column; }
+      .topbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 27px clamp(22px, 5vw, 72px); border-bottom: 1px solid var(--line); background: rgba(255,255,255,.68); }
+      .route { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; }
+      .route strong { color: var(--teal); font-weight: 500; }
+      .pilot-tag { padding: 7px 10px; color: #7b5b14; background: #fff4d7; border: 1px solid #f0d790; border-radius: 7px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .04em; text-transform: uppercase; }
+      .content { width: min(940px, 100%); margin: 0 auto; padding: clamp(32px, 6vw, 72px) clamp(22px, 5vw, 72px) 42px; }
+      .welcome { display: grid; grid-template-columns: 1.1fr .9fr; align-items: end; gap: 36px; margin-bottom: 38px; }
+      .welcome h2 { max-width: 590px; margin: 0; color: var(--ink); font-size: clamp(30px, 5vw, 53px); line-height: 1.04; letter-spacing: -.065em; }
+      .welcome h2 span { color: var(--teal); }
+      .welcome-note { margin: 0 0 4px; color: var(--muted); font-size: 13px; line-height: 1.75; }
+      .chat-card { overflow: hidden; border: 1px solid var(--line); background: var(--card); border-radius: 20px; box-shadow: var(--shadow); }
+      .chat-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 19px 22px; border-bottom: 1px solid var(--line); }
+      .agent { display: flex; align-items: center; gap: 12px; }
+      .agent-icon { display: grid; place-items: center; width: 38px; height: 38px; color: #fff; background: var(--teal); border-radius: 12px; font-size: 18px; }
+      .agent-name { font-size: 14px; font-weight: 800; }
+      .agent-role { margin-top: 2px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 10px; }
+      .availability { display: flex; align-items: center; gap: 7px; color: #548276; font-family: 'DM Mono', monospace; font-size: 10px; }
+      .availability .dot { width: 6px; height: 6px; background: #5fb78d; box-shadow: none; }
+      .messages { min-height: 240px; padding: 26px 22px; background: linear-gradient(180deg, #fbfdfc, #f6faf8); }
+      .message { max-width: 74%; padding: 15px 17px; border: 1px solid var(--line); border-radius: 4px 16px 16px 16px; color: #405857; background: #fff; font-size: 13px; line-height: 1.65; }
+      .message strong { color: var(--teal-dark); }
+      .message-meta { margin-top: 9px; color: #9aabaa; font-family: 'DM Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: .04em; }
+      .composer { display: flex; align-items: flex-end; gap: 12px; padding: 17px; border-top: 1px solid var(--line); background: #fff; }
+      textarea { flex: 1; min-height: 54px; resize: vertical; padding: 15px 16px; border: 1px solid var(--line); border-radius: 12px; outline: none; color: var(--ink); background: #fbfdfc; font-size: 13px; line-height: 1.5; }
+      textarea:focus { border-color: #77ada1; box-shadow: 0 0 0 3px rgba(119,173,161,.15); }
+      textarea::placeholder { color: #9aabaa; }
+      .send { display: grid; place-items: center; width: 54px; height: 54px; border: 0; border-radius: 12px; color: #fff; background: var(--teal); cursor: not-allowed; opacity: .55; font-size: 20px; }
+      .footnote { margin-top: 13px; color: #9aabaa; font-family: 'DM Mono', monospace; font-size: 10px; line-height: 1.5; }
+      .modules { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 26px; }
+      .module { padding: 17px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.6); }
+      .module-num { color: var(--gold); font-family: 'DM Mono', monospace; font-size: 11px; }
+      .module h3 { margin: 10px 0 5px; color: var(--ink); font-size: 13px; letter-spacing: -.02em; }
+      .module p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.55; }
+      @media (max-width: 760px) { .shell { display: block; } aside { min-height: 340px; } .status-card { position: relative; right: auto; bottom: auto; left: auto; margin-top: 34px; } .brand { margin-bottom: 34px; } .welcome { display: block; } .welcome-note { margin-top: 18px; } .modules { grid-template-columns: 1fr; } .topbar { align-items: flex-start; flex-direction: column; gap: 12px; } }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <aside>
+        <div class="brand"><div class="brand-mark">S</div><div><div class="brand-name">SESA</div><div class="brand-sub">Secretaria de Saúde</div></div></div>
+        <p class="eyebrow">Ambiente de validação</p>
+        <h1>Inteligência institucional para decisões mais seguras.</h1>
+        <p class="intro">Área reservada para validar a arquitetura multiagente do projeto SESA, começando pelo domínio jurídico.</p>
+        <div class="status-card"><div class="status-label"><span class="dot"></span> Modo de teste</div><p>Esta interface ainda não está conectada ao backend Python ou à API da Groq.</p></div>
+      </aside>
+      <main>
+        <header class="topbar"><div class="route">rota de validação / <strong>SESA</strong></div><div class="pilot-tag">Piloto 01 · Jurídico</div></header>
+        <section class="content">
+          <div class="welcome"><div><p class="eyebrow" style="color:var(--teal);">Agente gestor</p><h2>Converse com a <span>inteligência</span> da Secretaria.</h2></div><p class="welcome-note">O Agente Gestor será a única interface para os usuários. Ele encaminhará cada demanda ao agente temático adequado e coordenará os agentes de apoio.</p></div>
+          <section class="chat-card" aria-label="Interface de teste do Agente Gestor">
+            <div class="chat-head"><div class="agent"><div class="agent-icon">✦</div><div><div class="agent-name">Agente Gestor</div><div class="agent-role">orquestração · respostas · contexto</div></div></div><div class="availability"><span class="dot"></span> protótipo visual</div></div>
+            <div class="messages"><div class="message"><strong>Olá. Sou o Agente Gestor do SESA.</strong><br />Estou preparado para receber uma solicitação e encaminhá-la ao Agente Jurídico. A conexão com os agentes será ativada na próxima etapa de desenvolvimento.<div class="message-meta">mensagem inicial · ambiente de validação</div></div></div>
+            <div class="composer"><textarea aria-label="Mensagem para o Agente Gestor" placeholder="Digite uma solicitação de teste..."></textarea><button class="send" type="button" aria-label="Enviar mensagem" disabled>↗</button></div>
+          </section>
+          <p class="footnote">Sem dados reais · Sem credenciais no frontend · Interface estática para validação de arquitetura</p>
+          <div class="modules"><div class="module"><div class="module-num">01</div><h3>Agente Jurídico</h3><p>Primeiro domínio do piloto, apoiado pela base de normas e legislações da saúde.</p></div><div class="module"><div class="module-num">02</div><h3>Agente Dados</h3><p>Coleta, extração, organização e preparação das bases autorizadas.</p></div><div class="module"><div class="module-num">03</div><h3>Agente Estatístico</h3><p>Cálculos e comparações quando a demanda exigir análise quantitativa.</p></div><div class="module"><div class="module-num">04</div><h3>Agente Relatórios</h3><p>Respostas estruturadas, sumários e saídas para o usuário da Secretaria.</p></div><div class="module"><div class="module-num">05</div><h3>Maestro / Bases</h3><p>Fontes operacionais e institucionais acessadas somente por agentes autorizados.</p></div><div class="module"><div class="module-num">06</div><h3>Próxima etapa</h3><p>Conectar o chat a um backend Python com CrewAI e Groq, mantendo o token protegido.</p></div></div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

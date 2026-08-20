@@ -220,6 +220,12 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist"),
     emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        main: path.resolve(import.meta.dirname, "client/index.html"),
+        sesa: path.resolve(import.meta.dirname, "client/SESA/index.html"),
+      },
+    },
   },
   server: {
     port: 3000,
