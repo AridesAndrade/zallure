@@ -178,7 +178,7 @@
           <div class="structure-note">A visualização segue a estrutura oficial: Usuários → Agente Gestor → agentes temáticos → Agente Dados / Agente Estatístico / Agente Relatórios → Maestro, arquivos e bases de dados.</div>
         </section>
         <script>
-          const API_BASE = (window.SESA_API_BASE || localStorage.getItem('sesa_api_base') || '').replace(/\/$/, '');
+          const API_BASE = (window.SESA_API_BASE || localStorage.getItem('sesa_api_base') || 'http://127.0.0.1:8787').replace(/\/$/, '');
           const mainView = document.querySelector('.workspace');
           const stagesView = document.querySelector('.stages');
           const connectionStatus = document.querySelector('#connection-status');
