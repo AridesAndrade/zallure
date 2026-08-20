@@ -9,10 +9,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from dotenv import load_dotenv
+
 import requests
-from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+
+# Carrega a configuração local antes de importar a autenticação.
+# O arquivo permanece fora do GitHub e não é exibido nas respostas da API.
+load_dotenv(Path(__file__).resolve().parent / ".env.local", override=False)
 
 from auth import (
     authenticate_user,
@@ -51,9 +57,37 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[origin.strip() for origin in os.getenv("SESA_ALLOWED_ORIGINS", "*").split(",")],
     allow_credentials=False,
-    allow_methods=["GET", "POST"],
-    allow_headers=["Authorization", "Content-Type"],
+    allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "Access-Control-Request-Private-Network"],
 )
+
+
+@app.middleware("http")
+async def allow_private_network_access(request, call_next):
+    """Permite a chamada controlada da página HTTPS ao backend local.
+
+    Navegadores recentes podem enviar uma solicitação CORS preflight com
+    Access-Control-Request-Private-Network ao acessar 127.0.0.1 a partir de
+    uma página pública. O cabeçalho de resposta é limitado ao backend local.
+    """
+    if request.method == "OPTIONS":
+        origin = request.headers.get("origin", "*")
+        requested_headers = request.headers.get(
+            "access-control-request-headers",
+            "Authorization, Content-Type, Access-Control-Request-Private-Network",
+        )
+        response = Response(status_code=204)
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, DELETE, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = requested_headers
+        response.headers["Access-Control-Allow-Private-Network"] = "true"
+        response.headers["Access-Control-Max-Age"] = "600"
+        return response
+    response = await call_next(request)
+    if request.headers.get("access-control-request-private-network") == "true":
+        response.headers["Access-Control-Allow-Private-Network"] = "true"
+    return response
+
 
 DEFAULT_STATUS: dict[str, Any] = {
     "project": "SESA",
@@ -75,6 +109,10 @@ DEFAULT_STATUS: dict[str, Any] = {
 class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=12000)
     mode: str = Field(default="developer", pattern="^(developer|operational)$")
+
+
+class RoutingPreviewRequest(BaseModel):
+    message: str = Field(min_length=1, max_length=12000)
 
 
 class LoginRequest(BaseModel):
@@ -202,11 +240,43 @@ def build_crewai_developer_agent() -> Any:
     )
 
 
-def process_events(mode: str, groq_enabled: bool) -> list[dict[str, str]]:
+def route_request(message: str) -> dict[str, Any]:
+    """Classifica o destino sem abrir ou expor arquivos das bases.
+
+    O Gestor apenas identifica a área solicitante. O acesso documental permanece
+    reservado aos três agentes de apoio compartilhados.
+    """
+    normalized = message.casefold()
+    specialist = "saude"
+    specialist_label = "Agente Saúde"
+    if any(term in normalized for term in ("lei", "norma", "portaria", "legislação", "jurídico", "juridico")):
+        specialist = "juridico"
+        specialist_label = "Agente Jurídico"
+    elif any(term in normalized for term in ("orçamento", "orcamento", "compra", "financeiro", "empenho", "custo")):
+        specialist = "financeiro"
+        specialist_label = "Agente Financeiro"
+
+    support_agents = ["dados"]
+    if any(term in normalized for term in ("média", "media", "percentual", "taxa", "tendência", "tendencia", "desvio", "indicador", "estatística", "estatistica")):
+        support_agents.append("estatistico")
+    if any(term in normalized for term in ("relatório", "relatorio", "ofício", "oficio", "portaria", "documento", "exportar")):
+        support_agents.append("relatorios")
+
+    return {
+        "specialist": specialist,
+        "specialist_label": specialist_label,
+        "support_agents": support_agents,
+        "database_access": "restricted_to_shared_support_agents",
+        "content_read_by_gestor": False,
+    }
+
+
+def process_events(mode: str, groq_enabled: bool, routing: dict[str, Any]) -> list[dict[str, str]]:
     events = [
         {"key": "receber", "label": "Solicitação recebida pelo SESA"},
         {"key": "compreender", "label": "Agente Gestor validou o modo de atendimento"},
-        {"key": "consultar", "label": "Contexto técnico preparado para a análise"},
+        {"key": "encaminhar", "label": f"Encaminhando para {routing['specialist_label']}"},
+        {"key": "consultar", "label": "Agentes de apoio autorizados foram definidos"},
     ]
     if groq_enabled:
         events.append({"key": "consultar", "label": "Solicitando resposta à LLM configurada"})
@@ -350,6 +420,13 @@ def drive_status() -> dict[str, Any]:
     return overview
 
 
+@app.post("/api/routing/preview")
+def routing_preview(request: RoutingPreviewRequest) -> dict[str, Any]:
+    routing = route_request(request.message)
+    audit("routing.preview", "gestor", {"routing": routing, "message_length": len(request.message)})
+    return routing
+
+
 @app.post("/api/status", dependencies=[Depends(require_master)])
 def update_status(update: StatusUpdate) -> dict[str, Any]:
     status = read_status()
@@ -372,13 +449,14 @@ def chat(request: ChatRequest, authorization: str | None = Header(default=None))
     write_status(status)
     try:
         groq_enabled = bool(os.getenv("GROQ_API_KEY"))
+        routing = route_request(request.message)
         answer = groq_chat(request.message, request.mode)
-        events = process_events(request.mode, groq_enabled)
+        events = process_events(request.mode, groq_enabled, routing)
         status = read_status()
         status["stages"]["gestor"] = {"label": "Atendimento concluído", "state": "active", "progress": 50, "note": f"Modo {request.mode}"}
         write_status(status)
-        audit("chat", actor, {"mode": request.mode, "message_length": len(request.message), "crewai_available": bool(build_crewai_developer_agent())})
-        return {"answer": answer, "mode": request.mode, "events": events, "updated_at": now_iso()}
+        audit("chat", actor, {"mode": request.mode, "message_length": len(request.message), "routing": routing, "crewai_available": bool(build_crewai_developer_agent())})
+        return {"answer": answer, "mode": request.mode, "routing": routing, "events": events, "updated_at": now_iso()}
     except Exception:
         status = read_status()
         status["stages"]["gestor"] = {"label": "Falha controlada", "state": "blocked", "progress": 45, "note": "Verificar logs do backend"}
