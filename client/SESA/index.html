@@ -34,6 +34,8 @@
       .nav a:hover,.nav a.active { color:#fff; border-color:var(--accent); background:#101a0d; }
       .nav a.active { box-shadow:inset 2px 0 0 var(--accent); }
       .nav-icon { display:grid; place-items:center; width:18px; color:#77807c; font-size:13px; }
+      .internal-note { display:flex; align-items:flex-start; gap:8px; margin:12px 10px 2px; color:#fff; font-family:'DM Mono',monospace; font-size:9px; line-height:1.5; }
+      .internal-note .nav-icon { flex:0 0 18px; color:var(--accent); }
       .nav a.active .nav-icon { color:var(--accent); }
       .sidebar-bottom { margin-top:auto; padding:14px 10px 2px; border-top:1px solid var(--line); }
       .connection { display:flex; align-items:center; gap:8px; color:#878f8b; font-family:'DM Mono',monospace; font-size:9px; }
@@ -137,13 +139,10 @@
         <div class="nav-label">Atendimento SESA</div>
         <nav class="nav" aria-label="Navegação do SESA">
           <a class="active" href="./"><span class="nav-icon">◈</span> Conversar com o SESA</a>
-          <a href="#juridico"><span class="nav-icon">§</span> Agente Jurídico</a>
-          <a href="#dados"><span class="nav-icon">⌁</span> Agente Dados</a>
-          <a href="#estatistico"><span class="nav-icon">▥</span> Agente Estatístico</a>
-          <a href="#relatorios"><span class="nav-icon">▤</span> Agente Relatórios</a>
         </nav>
+        <div class="internal-note"><span class="nav-icon">◇</span><span>O SESA coordena internamente as áreas Jurídica, Dados, Estatística e Relatórios.</span></div>
         <div class="nav-label">Acesso rápido</div>
-        <nav class="nav"><a href="#etapas" data-view="stages"><span class="nav-icon">◫</span> Visual / Etapas</a><a href="#fontes"><span class="nav-icon">⌘</span> Bases e fontes</a></nav>
+        <nav class="nav"><a href="#etapas" data-view="stages"><span class="nav-icon">◫</span> Como o SESA trabalha</a><a href="#fontes"><span class="nav-icon">⌘</span> Fontes utilizadas pelo SESA</a></nav>
         <div class="sidebar-bottom"><div class="connection"><span class="dot"></span> SESA disponível</div><p class="sidebar-note">Estou aqui para receber sua solicitação e orientar o próximo passo.</p></div>
       </aside>
       <main class="main">
