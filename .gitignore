@@ -20,3 +20,6 @@ Thumbs.db
 backend/.env
 backend/status.json
 backend/audit.db
+
+backend/__pycache__/
+*.pyc
