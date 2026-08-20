@@ -17,3 +17,6 @@ build/
 Thumbs.db
 .manus-logs/
 *.log
+backend/.env
+backend/status.json
+backend/audit.db
