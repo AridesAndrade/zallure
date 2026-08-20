@@ -5,97 +5,128 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow, noarchive" />
     <meta name="googlebot" content="noindex, nofollow, noarchive" />
-    <title>SESA | Ambiente de Testes</title>
+    <title>SESA | Agente Gestor</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
-      :root {
-        --ink: #102b2d;
-        --muted: #6c7d7d;
-        --line: #d9e4e1;
-        --paper: #f5f8f6;
-        --card: #ffffff;
-        --teal: #185d5a;
-        --teal-dark: #0e3938;
-        --aqua: #dff1ec;
-        --gold: #d7a83e;
-        --shadow: 0 18px 50px rgba(16, 43, 45, .10);
-      }
-      * { box-sizing: border-box; }
-      body { margin: 0; min-width: 320px; color: var(--ink); background: var(--paper); font-family: Manrope, system-ui, sans-serif; }
-      button, textarea { font: inherit; }
-      .shell { min-height: 100vh; display: grid; grid-template-columns: 290px minmax(0, 1fr); }
-      aside { position: relative; overflow: hidden; padding: 30px 24px; color: #f7fffc; background: linear-gradient(155deg, var(--teal-dark), #184e4c 58%, #286b65); }
-      aside::after { content: ''; position: absolute; width: 260px; height: 260px; right: -130px; bottom: -100px; border: 1px solid rgba(255,255,255,.16); border-radius: 50%; box-shadow: 0 0 0 24px rgba(255,255,255,.04), 0 0 0 48px rgba(255,255,255,.03); }
-      .brand { position: relative; z-index: 1; display: flex; align-items: center; gap: 12px; margin-bottom: 62px; }
-      .brand-mark { display: grid; place-items: center; width: 42px; height: 42px; color: var(--teal-dark); background: #effaf4; border-radius: 13px; font-size: 20px; font-weight: 800; }
-      .brand-name { font-size: 17px; font-weight: 800; letter-spacing: .04em; }
-      .brand-sub { margin-top: 2px; color: rgba(247,255,252,.66); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
-      .eyebrow { margin: 0 0 14px; color: #b9dfd2; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
-      aside h1 { max-width: 220px; margin: 0; color: #f7fffc; font-size: 28px; line-height: 1.16; letter-spacing: -.04em; }
-      .intro { max-width: 220px; margin: 18px 0 0; color: rgba(247,255,252,.72); font-size: 13px; line-height: 1.7; }
-      .status-card { position: absolute; z-index: 1; right: 24px; bottom: 28px; left: 24px; padding: 15px; border: 1px solid rgba(255,255,255,.15); background: rgba(6, 35, 34, .22); border-radius: 14px; }
-      .status-label { display: flex; align-items: center; gap: 8px; color: #d7f5e9; font-size: 11px; font-weight: 700; }
-      .dot { width: 7px; height: 7px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 0 4px rgba(215,168,62,.16); }
-      .status-card p { margin: 10px 0 0; color: rgba(247,255,252,.62); font-size: 11px; line-height: 1.5; }
-      main { display: flex; min-width: 0; flex-direction: column; }
-      .topbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 27px clamp(22px, 5vw, 72px); border-bottom: 1px solid var(--line); background: rgba(255,255,255,.68); }
-      .route { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; }
-      .route strong { color: var(--teal); font-weight: 500; }
-      .pilot-tag { padding: 7px 10px; color: #7b5b14; background: #fff4d7; border: 1px solid #f0d790; border-radius: 7px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .04em; text-transform: uppercase; }
-      .content { width: min(940px, 100%); margin: 0 auto; padding: clamp(32px, 6vw, 72px) clamp(22px, 5vw, 72px) 42px; }
-      .welcome { display: grid; grid-template-columns: 1.1fr .9fr; align-items: end; gap: 36px; margin-bottom: 38px; }
-      .welcome h2 { max-width: 590px; margin: 0; color: var(--ink); font-size: clamp(30px, 5vw, 53px); line-height: 1.04; letter-spacing: -.065em; }
-      .welcome h2 span { color: var(--teal); }
-      .welcome-note { margin: 0 0 4px; color: var(--muted); font-size: 13px; line-height: 1.75; }
-      .chat-card { overflow: hidden; border: 1px solid var(--line); background: var(--card); border-radius: 20px; box-shadow: var(--shadow); }
-      .chat-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 19px 22px; border-bottom: 1px solid var(--line); }
-      .agent { display: flex; align-items: center; gap: 12px; }
-      .agent-icon { display: grid; place-items: center; width: 38px; height: 38px; color: #fff; background: var(--teal); border-radius: 12px; font-size: 18px; }
-      .agent-name { font-size: 14px; font-weight: 800; }
-      .agent-role { margin-top: 2px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 10px; }
-      .availability { display: flex; align-items: center; gap: 7px; color: #548276; font-family: 'DM Mono', monospace; font-size: 10px; }
-      .availability .dot { width: 6px; height: 6px; background: #5fb78d; box-shadow: none; }
-      .messages { min-height: 240px; padding: 26px 22px; background: linear-gradient(180deg, #fbfdfc, #f6faf8); }
-      .message { max-width: 74%; padding: 15px 17px; border: 1px solid var(--line); border-radius: 4px 16px 16px 16px; color: #405857; background: #fff; font-size: 13px; line-height: 1.65; }
-      .message strong { color: var(--teal-dark); }
-      .message-meta { margin-top: 9px; color: #9aabaa; font-family: 'DM Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: .04em; }
-      .composer { display: flex; align-items: flex-end; gap: 12px; padding: 17px; border-top: 1px solid var(--line); background: #fff; }
-      textarea { flex: 1; min-height: 54px; resize: vertical; padding: 15px 16px; border: 1px solid var(--line); border-radius: 12px; outline: none; color: var(--ink); background: #fbfdfc; font-size: 13px; line-height: 1.5; }
-      textarea:focus { border-color: #77ada1; box-shadow: 0 0 0 3px rgba(119,173,161,.15); }
-      textarea::placeholder { color: #9aabaa; }
-      .send { display: grid; place-items: center; width: 54px; height: 54px; border: 0; border-radius: 12px; color: #fff; background: var(--teal); cursor: not-allowed; opacity: .55; font-size: 20px; }
-      .footnote { margin-top: 13px; color: #9aabaa; font-family: 'DM Mono', monospace; font-size: 10px; line-height: 1.5; }
-      .modules { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 26px; }
-      .module { padding: 17px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.6); }
-      .module-num { color: var(--gold); font-family: 'DM Mono', monospace; font-size: 11px; }
-      .module h3 { margin: 10px 0 5px; color: var(--ink); font-size: 13px; letter-spacing: -.02em; }
-      .module p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.55; }
-      @media (max-width: 760px) { .shell { display: block; } aside { min-height: 340px; } .status-card { position: relative; right: auto; bottom: auto; left: auto; margin-top: 34px; } .brand { margin-bottom: 34px; } .welcome { display: block; } .welcome-note { margin-top: 18px; } .modules { grid-template-columns: 1fr; } .topbar { align-items: flex-start; flex-direction: column; gap: 12px; } }
+      :root { --bg:#080909; --panel:#101111; --panel-2:#151717; --line:#292c2c; --text:#f1f2f0; --muted:#8a918e; --soft:#c4cbc7; --accent:#d9ff45; --accent-2:#a6cc31; --blue:#84a8ff; }
+      * { box-sizing:border-box; }
+      html,body { min-height:100%; }
+      body { margin:0; background:var(--bg); color:var(--text); font-family:Inter,system-ui,sans-serif; }
+      button,textarea { font:inherit; }
+      .app { display:flex; min-height:100vh; background:var(--bg); }
+      .sidebar { position:fixed; inset:0 auto 0 0; z-index:5; display:flex; width:252px; flex-direction:column; padding:18px 14px; border-right:1px solid var(--line); background:#0b0c0c; }
+      .brand { display:flex; align-items:center; gap:10px; padding:4px 10px 24px; }
+      .brand-mark { display:grid; place-items:center; width:30px; height:30px; border-radius:9px; color:#111; background:var(--accent); font-weight:800; }
+      .brand-name { font-size:15px; font-weight:700; letter-spacing:-.03em; }
+      .brand-sub { margin-top:3px; color:var(--muted); font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.08em; text-transform:uppercase; }
+      .new-chat { display:flex; align-items:center; gap:10px; width:100%; padding:11px 12px; border:1px solid #333737; border-radius:9px; color:var(--text); background:#171919; text-align:left; cursor:pointer; transition:.18s ease; }
+      .new-chat:hover { border-color:#58615e; background:#1e2120; }
+      .new-chat span { color:var(--accent); font-size:18px; line-height:1; }
+      .nav-label { margin:26px 10px 8px; color:#626967; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.13em; text-transform:uppercase; }
+      .nav { display:grid; gap:3px; }
+      .nav a { display:flex; align-items:center; gap:11px; padding:10px 11px; border-radius:8px; color:#9ba29f; font-size:12px; text-decoration:none; transition:.18s ease; }
+      .nav a:hover,.nav a.active { color:var(--text); background:#1a1d1c; }
+      .nav a.active { box-shadow:inset 2px 0 0 var(--accent); }
+      .nav-icon { display:grid; place-items:center; width:18px; color:#77807c; font-size:13px; }
+      .nav a.active .nav-icon { color:var(--accent); }
+      .sidebar-bottom { margin-top:auto; padding:14px 10px 2px; border-top:1px solid var(--line); }
+      .connection { display:flex; align-items:center; gap:8px; color:#878f8b; font-family:'DM Mono',monospace; font-size:9px; }
+      .dot { width:6px; height:6px; border-radius:50%; background:#e9a938; box-shadow:0 0 0 3px rgba(233,169,56,.12); }
+      .sidebar-note { margin:10px 0 0; color:#555d59; font-size:10px; line-height:1.55; }
+      .main { width:calc(100% - 252px); min-height:100vh; margin-left:252px; }
+      .topbar { display:flex; align-items:center; justify-content:space-between; min-height:57px; padding:0 28px; border-bottom:1px solid var(--line); background:rgba(11,12,12,.88); }
+      .crumb { color:#777f7b; font-family:'DM Mono',monospace; font-size:10px; }
+      .crumb strong { color:#bbc4c0; font-weight:400; }
+      .mode { padding:5px 8px; border:1px solid #42472a; border-radius:5px; color:var(--accent); background:#171a0d; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.04em; text-transform:uppercase; }
+      .workspace { display:flex; min-height:calc(100vh - 57px); flex-direction:column; align-items:center; padding:clamp(34px,8vh,88px) 22px 40px; }
+      .hero { width:min(720px,100%); text-align:center; }
+      .eyebrow { margin:0 0 14px; color:var(--accent); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; }
+      h1 { margin:0; color:#f5f6f3; font-size:clamp(29px,4.4vw,47px); font-weight:600; letter-spacing:-.065em; line-height:1.06; }
+      .lead { max-width:560px; margin:17px auto 0; color:#858d89; font-size:13px; line-height:1.7; }
+      .chat { width:min(780px,100%); margin-top:44px; border:1px solid var(--line); border-radius:12px; background:var(--panel); box-shadow:0 24px 80px rgba(0,0,0,.28); }
+      .chat-head { display:flex; align-items:center; justify-content:space-between; padding:15px 17px; border-bottom:1px solid var(--line); }
+      .agent { display:flex; align-items:center; gap:10px; }
+      .agent-icon { display:grid; place-items:center; width:28px; height:28px; border-radius:8px; color:#111; background:var(--accent); font-size:14px; font-weight:800; }
+      .agent-name { color:#e8ebe8; font-size:12px; font-weight:600; }
+      .agent-role { margin-top:3px; color:#737b77; font-family:'DM Mono',monospace; font-size:9px; }
+      .status { display:flex; align-items:center; gap:7px; color:#777f7b; font-family:'DM Mono',monospace; font-size:9px; }
+      .status .dot { background:#dbab3a; box-shadow:none; }
+      .messages { min-height:188px; padding:20px; background:#0d0f0f; }
+      .message { max-width:600px; padding:15px 16px; border:1px solid #2d3230; border-radius:9px; color:#adb5b1; background:#141716; font-size:12px; line-height:1.7; text-align:left; }
+      .message strong { color:#e5e9e5; font-weight:600; }
+      .message-meta { margin-top:9px; color:#68716c; font-family:'DM Mono',monospace; font-size:8px; letter-spacing:.03em; text-transform:uppercase; }
+      .composer { display:flex; align-items:flex-end; gap:10px; padding:12px; border-top:1px solid var(--line); background:#111313; }
+      textarea { flex:1; min-height:50px; resize:vertical; padding:13px 14px; border:1px solid #303634; border-radius:8px; outline:0; color:#e7ebe7; background:#0c0e0e; font-size:12px; line-height:1.5; }
+      textarea:focus { border-color:#687b42; box-shadow:0 0 0 3px rgba(217,255,69,.07); }
+      textarea::placeholder { color:#626a66; }
+      .send { display:grid; place-items:center; width:50px; height:50px; border:1px solid #48542d; border-radius:8px; color:#111; background:var(--accent); cursor:not-allowed; opacity:.42; font-size:18px; }
+      .note { width:min(780px,100%); margin:12px 0 0; color:#555e59; font-family:'DM Mono',monospace; font-size:9px; line-height:1.5; text-align:left; }
+      .links { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:27px; }
+      .links a { padding:8px 10px; border:1px solid #282d2b; border-radius:6px; color:#818a85; font-family:'DM Mono',monospace; font-size:9px; text-decoration:none; transition:.18s ease; }
+      .links a:hover { border-color:#48513e; color:var(--accent); }
+      .stages { display:none; width:min(980px,100%); }
+      .stages.show { display:block; }
+      .stages-head { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; margin-bottom:28px; }
+      .stages-head h2 { margin:0; color:#f5f6f3; font-size:clamp(25px,4vw,38px); letter-spacing:-.06em; }
+      .stages-head p { max-width:380px; margin:0; color:#858d89; font-size:12px; line-height:1.6; }
+      .stage-flow { display:grid; gap:12px; }
+      .stage { display:grid; grid-template-columns:48px minmax(0,1fr) auto; align-items:center; gap:18px; padding:18px; border:1px solid var(--line); border-radius:10px; background:#101212; }
+      .stage-number { display:grid; place-items:center; width:38px; height:38px; border:1px solid #4b552d; border-radius:10px; color:var(--accent); background:#171b0e; font-family:'DM Mono',monospace; font-size:11px; }
+      .stage-title { color:#e8ebe8; font-size:13px; font-weight:600; }
+      .stage-description { margin-top:5px; color:#7f8883; font-size:11px; line-height:1.5; }
+      .stage-state { padding:6px 8px; border:1px solid #47512d; border-radius:5px; color:var(--accent); background:#171b0e; font-family:'DM Mono',monospace; font-size:9px; text-transform:uppercase; white-space:nowrap; }
+      .stage.pending .stage-number { border-color:#353a38; color:#727a76; background:#151717; }
+      .stage.pending .stage-state { border-color:#343a37; color:#77807b; background:#151717; }
+      .structure-note { margin-top:18px; padding:15px 17px; border-left:2px solid var(--accent); color:#7f8883; background:#101212; font-size:11px; line-height:1.6; }
+      @media (max-width:720px) { .sidebar { position:relative; width:100%; height:auto; min-height:0; border-right:0; border-bottom:1px solid var(--line); } .sidebar-bottom { margin-top:25px; } .main { width:100%; margin-left:0; } .app { display:block; } .nav { grid-template-columns:repeat(2,1fr); } .nav-label { margin-top:19px; } .workspace { min-height:calc(100vh - 380px); } .topbar { padding:0 18px; } }
     </style>
   </head>
   <body>
-    <div class="shell">
-      <aside>
+    <div class="app">
+      <aside class="sidebar">
         <div class="brand"><div class="brand-mark">S</div><div><div class="brand-name">SESA</div><div class="brand-sub">Secretaria de Saúde</div></div></div>
-        <p class="eyebrow">Ambiente de validação</p>
-        <h1>Inteligência institucional para decisões mais seguras.</h1>
-        <p class="intro">Área reservada para validar a arquitetura multiagente do projeto SESA, começando pelo domínio jurídico.</p>
-        <div class="status-card"><div class="status-label"><span class="dot"></span> Modo de teste</div><p>Esta interface ainda não está conectada ao backend Python ou à API da Groq.</p></div>
+        <button class="new-chat" type="button"><span>＋</span> Nova conversa</button>
+        <div class="nav-label">Projeto</div>
+        <nav class="nav" aria-label="Navegação do projeto SESA">
+          <a class="active" href="./"><span class="nav-icon">◈</span> Agente Gestor</a>
+          <a href="#juridico"><span class="nav-icon">§</span> Agente Jurídico</a>
+          <a href="#dados"><span class="nav-icon">⌁</span> Agente Dados</a>
+          <a href="#estatistico"><span class="nav-icon">▥</span> Agente Estatístico</a>
+          <a href="#relatorios"><span class="nav-icon">▤</span> Agente Relatórios</a>
+        </nav>
+        <div class="nav-label">Acesso rápido</div>
+        <nav class="nav"><a href="#etapas" data-view="stages"><span class="nav-icon">◫</span> Visual / Etapas</a><a href="#fontes"><span class="nav-icon">⌘</span> Bases e fontes</a></nav>
+        <div class="sidebar-bottom"><div class="connection"><span class="dot"></span> Backend não conectado</div><p class="sidebar-note">Interface de validação. Nenhum dado real ou credencial é mantido nesta página.</p></div>
       </aside>
-      <main>
-        <header class="topbar"><div class="route">rota de validação / <strong>SESA</strong></div><div class="pilot-tag">Piloto 01 · Jurídico</div></header>
-        <section class="content">
-          <div class="welcome"><div><p class="eyebrow" style="color:var(--teal);">Agente gestor</p><h2>Converse com a <span>inteligência</span> da Secretaria.</h2></div><p class="welcome-note">O Agente Gestor será a única interface para os usuários. Ele encaminhará cada demanda ao agente temático adequado e coordenará os agentes de apoio.</p></div>
-          <section class="chat-card" aria-label="Interface de teste do Agente Gestor">
-            <div class="chat-head"><div class="agent"><div class="agent-icon">✦</div><div><div class="agent-name">Agente Gestor</div><div class="agent-role">orquestração · respostas · contexto</div></div></div><div class="availability"><span class="dot"></span> protótipo visual</div></div>
-            <div class="messages"><div class="message"><strong>Olá. Sou o Agente Gestor do SESA.</strong><br />Estou preparado para receber uma solicitação e encaminhá-la ao Agente Jurídico. A conexão com os agentes será ativada na próxima etapa de desenvolvimento.<div class="message-meta">mensagem inicial · ambiente de validação</div></div></div>
-            <div class="composer"><textarea aria-label="Mensagem para o Agente Gestor" placeholder="Digite uma solicitação de teste..."></textarea><button class="send" type="button" aria-label="Enviar mensagem" disabled>↗</button></div>
-          </section>
-          <p class="footnote">Sem dados reais · Sem credenciais no frontend · Interface estática para validação de arquitetura</p>
-          <div class="modules"><div class="module"><div class="module-num">01</div><h3>Agente Jurídico</h3><p>Primeiro domínio do piloto, apoiado pela base de normas e legislações da saúde.</p></div><div class="module"><div class="module-num">02</div><h3>Agente Dados</h3><p>Coleta, extração, organização e preparação das bases autorizadas.</p></div><div class="module"><div class="module-num">03</div><h3>Agente Estatístico</h3><p>Cálculos e comparações quando a demanda exigir análise quantitativa.</p></div><div class="module"><div class="module-num">04</div><h3>Agente Relatórios</h3><p>Respostas estruturadas, sumários e saídas para o usuário da Secretaria.</p></div><div class="module"><div class="module-num">05</div><h3>Maestro / Bases</h3><p>Fontes operacionais e institucionais acessadas somente por agentes autorizados.</p></div><div class="module"><div class="module-num">06</div><h3>Próxima etapa</h3><p>Conectar o chat a um backend Python com CrewAI e Groq, mantendo o token protegido.</p></div></div>
+      <main class="main">
+        <header class="topbar"><div class="crumb">workspace / <strong>SESA</strong> / agente-gestor</div><div class="mode">ambiente de teste</div></header>
+        <section class="workspace">
+          <div class="hero"><p class="eyebrow">Agente Gestor · SESA</p><h1>Como posso ajudar a Secretaria hoje?</h1><p class="lead">A interface única para encaminhar solicitações aos agentes especializados, consultar bases autorizadas e organizar respostas para tomada de decisão.</p></div>
+          <section class="chat" aria-label="Chat do Agente Gestor"><div class="chat-head"><div class="agent"><div class="agent-icon">✦</div><div><div class="agent-name">Agente Gestor</div><div class="agent-role">orquestração · contexto · respostas</div></div></div><div class="status"><span class="dot"></span> protótipo visual</div></div><div class="messages"><div class="message"><strong>Olá. Sou o Agente Gestor do SESA.</strong><br />Esta é a primeira interface de validação. Na próxima etapa, o chat será conectado ao backend Python, ao CrewAI e ao Agente Jurídico, que consultará o banco de normas e legislações da saúde.<div class="message-meta">mensagem inicial · piloto jurídico</div></div></div><div class="composer"><textarea aria-label="Mensagem para o Agente Gestor" placeholder="Envie uma solicitação de teste..."></textarea><button class="send" type="button" aria-label="Enviar mensagem" disabled>↗</button></div></section>
+          <p class="note">Sem dados reais · Sem credenciais no frontend · Interface estática para validação da arquitetura</p>
+          <div class="links"><a href="#juridico">Piloto Jurídico</a><a href="#dados">Agente Dados</a><a href="#estatistico">Agente Estatístico</a><a href="#relatorios">Agente Relatórios</a></div>
         </section>
+        <section class="stages" id="etapas" aria-label="Etapas implementadas do projeto SESA">
+          <div class="stages-head"><div><p class="eyebrow">Mapa do projeto · Visual</p><h2>Etapas implementadas</h2></div><p>Acompanhamento visual da estrutura oficial do SESA. O estado de cada camada será atualizado conforme o projeto avançar.</p></div>
+          <div class="stage-flow">
+            <div class="stage"><div class="stage-number">01</div><div><div class="stage-title">Área de testes /SESA/</div><div class="stage-description">Interface estática publicada em rota separada, com fundo preto e frame lateral de navegação.</div></div><div class="stage-state">Implementado</div></div>
+            <div class="stage"><div class="stage-number">02</div><div><div class="stage-title">Agente Gestor</div><div class="stage-description">Interface única com os usuários da Secretaria e futura orquestração das camadas temáticas.</div></div><div class="stage-state">Interface criada</div></div>
+            <div class="stage"><div class="stage-number">03</div><div><div class="stage-title">Agente Jurídico · piloto</div><div class="stage-description">Primeiro agente temático, dedicado às normas e legislações da saúde disponibilizadas.</div></div><div class="stage-state">Próxima etapa</div></div>
+            <div class="stage pending"><div class="stage-number">04</div><div><div class="stage-title">Agente Dados</div><div class="stage-description">Agente compartilhado responsável pela coleta, extração, validação e preparação das bases.</div></div><div class="stage-state">Planejado</div></div>
+            <div class="stage pending"><div class="stage-number">05</div><div><div class="stage-title">Agente Estatístico</div><div class="stage-description">Agente compartilhado para cálculos, comparações, padrões e tendências quando necessário.</div></div><div class="stage-state">Planejado</div></div>
+            <div class="stage pending"><div class="stage-number">06</div><div><div class="stage-title">Agente Relatórios</div><div class="stage-description">Agente compartilhado para respostas estruturadas, sumários e saídas de acompanhamento.</div></div><div class="stage-state">Planejado</div></div>
+            <div class="stage pending"><div class="stage-number">07</div><div><div class="stage-title">Bases de dados autorizadas</div><div class="stage-description">Maestro, arquivos e bancos de dados acessados conforme a função de cada agente.</div></div><div class="stage-state">Em definição</div></div>
+          </div>
+          <div class="structure-note">A visualização segue a estrutura oficial: Usuários → Agente Gestor → agentes temáticos → Agente Dados / Agente Estatístico / Agente Relatórios → Maestro, arquivos e bases de dados.</div>
+        </section>
+        <script>
+          const mainView = document.querySelector('.workspace');
+          const stagesView = document.querySelector('.stages');
+          document.querySelectorAll('[data-view="stages"]').forEach((link) => link.addEventListener('click', (event) => { event.preventDefault(); mainView.style.display = 'none'; stagesView.classList.add('show'); window.scrollTo({ top: 0, behavior: 'smooth' }); }));
+          document.querySelector('.brand').addEventListener('click', () => { mainView.style.display = ''; stagesView.classList.remove('show'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+        </script>
       </main>
     </div>
   </body>
