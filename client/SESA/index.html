@@ -47,6 +47,16 @@
       .crumb strong { color:#bbc4c0; font-weight:400; }
       .mode { padding:5px 8px; border:1px solid #42472a; border-radius:5px; color:var(--accent); background:#2a2d21; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.04em; text-transform:uppercase; }
       .workspace { display:flex; min-height:calc(100vh - 57px); flex-direction:column; align-items:center; padding:clamp(34px,8vh,88px) 22px 40px; }
+      .workspace.conversation-mode { align-items:stretch; padding:0; }
+      .workspace.conversation-mode .hero { display:none; }
+      .workspace.conversation-mode .chat { width:min(860px,100%); min-height:calc(100vh - 57px); margin:0 auto; border:0; border-radius:0; background:transparent; box-shadow:none; overflow:visible; }
+      .workspace.conversation-mode .chat-head { position:sticky; top:0; z-index:2; padding:14px 20px; background:rgba(17,17,17,.96); backdrop-filter:blur(10px); }
+      .workspace.conversation-mode .messages { min-height:calc(100vh - 245px); padding:36px 24px 160px; background:transparent; }
+      .workspace.conversation-mode .composer { position:sticky; bottom:16px; z-index:3; width:min(680px,calc(100% - 40px)); margin:-126px auto 0; border:1px solid rgba(255,255,255,.18); border-radius:24px; background:rgba(32,32,32,.96); box-shadow:0 12px 30px rgba(0,0,0,.25); }
+      .workspace.conversation-mode .note, .workspace.conversation-mode .links { display:none; }
+      .workspace.conversation-mode .process-panel { margin:0 auto 22px; max-width:640px; background:transparent; border:0; }
+      .workspace.conversation-mode .process-panel.complete { background:transparent; }
+      .workspace.conversation-mode .process-steps { display:none; }
       .hero { width:min(720px,100%); text-align:center; }
       .eyebrow { margin:0 0 14px; color:var(--accent); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; }
       h1 { margin:0; color:#f5f6f3; font-size:clamp(29px,4.4vw,47px); font-weight:600; letter-spacing:-.065em; line-height:1.06; }
@@ -60,10 +70,21 @@
       .status { display:flex; align-items:center; gap:7px; color:#777f7b; font-family:'DM Mono',monospace; font-size:9px; }
       .status .dot { background:#dbab3a; box-shadow:none; }
       .messages { min-height:188px; padding:20px; background:#222222; }
-      .message { max-width:600px; padding:15px 16px; border:1px solid var(--accent); border-radius:9px; color:#fff; background:#282d28; font-size:12px; line-height:1.7; text-align:left; }
+      .message { max-width:600px; margin-bottom:24px; padding:15px 16px; border:1px solid var(--accent); border-radius:9px; color:#fff; background:#282d28; font-size:12px; line-height:1.7; text-align:left; }
+      .message.user-message { margin-left:auto; margin-right:0; max-width:420px; border-color:#3d3d3d; border-radius:16px 16px 4px 16px; background:#303030; }
+      .message.sesa-message { margin-left:0; margin-right:auto; border-color:#4a4a4a; border-radius:4px 16px 16px 16px; background:#1c1c1c; }
+      .conversation-mode .message { border-color:#3e3e3e; }
+      .conversation-mode .message-meta { color:#787878; }
+      .conversation-mode .process-panel.complete .process-head { color:#bcbcbc; }
+      .conversation-mode .process-panel.complete .process-live { color:#999; }
+      .conversation-mode .process-panel.complete .process-detail { color:#858585; }
       .message strong { color:#e5e9e5; font-weight:600; }
       .message-meta { margin-top:9px; color:#68716c; font-family:'DM Mono',monospace; font-size:8px; letter-spacing:.03em; text-transform:uppercase; }
       .composer { display:flex; align-items:flex-end; gap:10px; padding:12px; border-top:1px solid var(--line); border-radius:0 0 11px 11px; background:#1e1e1e; }
+      .composer-icon { display:grid; flex:0 0 28px; place-items:center; width:28px; height:28px; margin-bottom:9px; color:#aaa; font-size:22px; }
+      .composer-mode { display:none; align-items:center; gap:5px; margin:0 6px 10px auto; color:#999; font-family:'DM Mono',monospace; font-size:9px; white-space:nowrap; }
+      .conversation-mode .composer-mode { display:flex; }
+      .composer-mode span { color:#cfcfcf; font-size:12px; }
       textarea { flex:1 1 auto; min-width:0; min-height:50px; resize:vertical; padding:13px 14px; border:1px solid #303634; border-radius:8px; outline:0; color:#e7ebe7; background:#191919; font-size:12px; line-height:1.5; }
       textarea:focus { border-color:#687b42; box-shadow:0 0 0 3px rgba(107,214,111,.07); }
       textarea::placeholder { color:#626a66; }
@@ -72,6 +93,7 @@
       .process-panel { margin:0 20px 16px; padding:13px 14px; border:.5px solid var(--line-soft); border-radius:8px; background:rgba(38,42,38,.82); }
       .process-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:9px; color:#fff; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.04em; text-transform:uppercase; }
       .process-live { color:var(--accent); }
+      .process-panel.complete .process-live::before { content:'○ '; }
       .process-detail { margin:-2px 0 10px; color:#b9c0ba; font-size:10px; line-height:1.5; }
       .process-steps { display:grid; gap:6px; }
       .process-step { display:flex; align-items:center; gap:8px; color:rgba(255,255,255,.56); font-family:'DM Mono',monospace; font-size:9px; line-height:1.4; }
@@ -205,7 +227,7 @@
         <header class="topbar"><div class="crumb"><strong>SESA</strong> / atendimento</div><div class="mode">disponível</div></header>
         <section class="workspace">
           <div class="hero"><p class="eyebrow">SESA · Secretaria de Saúde</p><h1>Como posso ajudar você hoje?</h1><p class="lead">Estou disponível para receber sua solicitação, compreender o que você precisa e encaminhar a resposta adequada.</p></div>
-          <section class="chat" aria-label="Conversa com o SESA"><div class="chat-head"><div class="agent"><img class="agent-icon" src="./persona_sesa_masculina_linear.png" alt="SESA — Agente da Secretaria de Saúde de Louveira" /><div><div class="agent-name">SESA</div><div class="agent-role">disponível para ouvir e orientar</div></div></div><div class="status" id="connection-status"><span class="dot"></span> SESA disponível</div></div><div class="messages" id="messages"><div class="message"><strong>Olá. Eu sou o SESA.</strong><br />Estou disponível para ouvir sua solicitação e ajudar você a encontrar a orientação ou o encaminhamento adequado.<div class="message-meta">atendimento institucional</div></div></div><div class="process-panel" id="process-panel" hidden aria-live="polite"><div class="process-head"><span>O SESA está trabalhando</span><span class="process-live">em andamento</span></div><div class="process-detail" id="process-detail">O SESA iniciou o atendimento.</div><div class="process-steps"><div class="process-step" data-process="receber">Recebendo e organizando a solicitação</div><div class="process-step" data-process="compreender">Compreendendo o contexto</div><div class="process-step" data-process="consultar">Consultando as áreas internas autorizadas</div><div class="process-step" data-process="responder">Preparando a orientação do SESA</div></div></div><div class="composer"><textarea id="message-input" aria-label="Mensagem para o SESA" placeholder="Escreva sua solicitação para o SESA..."></textarea><button class="send" id="send-button" type="button" aria-label="Enviar mensagem">↗</button></div></section>
+          <section class="chat" aria-label="Conversa com o SESA"><div class="chat-head"><div class="agent"><img class="agent-icon" src="./persona_sesa_masculina_linear.png" alt="SESA — Agente da Secretaria de Saúde de Louveira" /><div><div class="agent-name">SESA</div><div class="agent-role">disponível para ouvir e orientar</div></div></div><div class="status" id="connection-status"><span class="dot"></span> SESA disponível</div></div><div class="messages" id="messages"><div class="message sesa-message"><strong>Olá. Eu sou o SESA.</strong><br />Estou disponível para ouvir sua solicitação e ajudar você a encontrar a orientação ou o encaminhamento adequado.<div class="message-meta">atendimento institucional</div></div></div><div class="process-panel" id="process-panel" hidden aria-live="polite"><div class="process-head"><span>O SESA está trabalhando</span><span class="process-live">em andamento</span></div><div class="process-detail" id="process-detail">O SESA iniciou o atendimento.</div><div class="process-steps"><div class="process-step" data-process="receber">Recebendo e organizando a solicitação</div><div class="process-step" data-process="compreender">Compreendendo o contexto</div><div class="process-step" data-process="consultar">Consultando as áreas internas autorizadas</div><div class="process-step" data-process="responder">Preparando a orientação do SESA</div></div></div><div class="composer"><div class="composer-icon" aria-hidden="true">＋</div><textarea id="message-input" aria-label="Mensagem para o SESA" placeholder="Escreva sua solicitação para o SESA..."></textarea><div class="composer-mode">Atendimento <span>⌄</span></div><button class="send" id="send-button" type="button" aria-label="Enviar mensagem">↗</button></div></section>
           <p class="note">O SESA está disponível para apoiar a Secretaria de Saúde de Louveira em suas solicitações.</p>
           <div class="links"><a href="#etapas" data-view="stages">Ver como o SESA trabalha</a></div>
         </section>
@@ -232,7 +254,8 @@
           document.querySelectorAll('[data-view="stages"]').forEach((link) => link.addEventListener('click', (event) => { event.preventDefault(); mainView.style.display = 'none'; stagesView.classList.add('show'); window.scrollTo({ top: 0, behavior: 'smooth' }); }));
           document.querySelector('.brand').addEventListener('click', () => { mainView.style.display = ''; stagesView.classList.remove('show'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
           const escapeHtml = (value) => value.replace(/[&<>\"]/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '\"':'&quot;' }[char]));
-          const appendMessage = (text, author) => { const item = document.createElement('div'); item.className = 'message'; item.innerHTML = `<strong>${escapeHtml(author)}</strong><br />${escapeHtml(text).replace(/\n/g, '<br />')}<div class="message-meta">SESA · ${new Date().toLocaleTimeString('pt-BR')}</div>`; messages.appendChild(item); };
+          const workspace = document.querySelector('.workspace');
+          const appendMessage = (text, author) => { const item = document.createElement('div'); item.className = `message ${author === 'Você' ? 'user-message' : 'sesa-message'}`; item.innerHTML = `<strong>${escapeHtml(author)}</strong><br />${escapeHtml(text).replace(/\n/g, '<br />')}<div class="message-meta">SESA · ${new Date().toLocaleTimeString('pt-BR')}</div>`; messages.appendChild(item); };
           const processPanel = document.querySelector('#process-panel');
           const processSteps = [...document.querySelectorAll('.process-step')];
           let processTimer;
@@ -240,8 +263,8 @@
           const processLabels = ['O SESA recebeu a solicitação.', 'O SESA está compreendendo o contexto.', 'O SESA está consultando as áreas internas autorizadas.', 'O SESA está preparando a orientação.'];
           const setProcessStep = (index) => { processSteps.forEach((step, stepIndex) => { step.classList.toggle('done', stepIndex < index); step.classList.toggle('active', stepIndex === index); }); if (processDetail) processDetail.textContent = processLabels[index] || processLabels[processLabels.length - 1]; };
           const applyProcessEvents = (events) => { if (!Array.isArray(events) || !events.length) return; const last = events[events.length - 1]; const index = Math.max(0, processSteps.findIndex((step) => step.dataset.process === last.key)); setProcessStep(index); if (processDetail) processDetail.textContent = last.label; };
-          const startProcess = () => { clearInterval(processTimer); processPanel.hidden = false; setProcessStep(0); let index = 1; processTimer = window.setInterval(() => { if (index >= processSteps.length) { clearInterval(processTimer); return; } setProcessStep(index); index += 1; }, 850); };
-          const finishProcess = () => { clearInterval(processTimer); processSteps.forEach((step) => { step.classList.remove('active'); step.classList.add('done'); }); window.setTimeout(() => { processPanel.hidden = true; }, 900); };
+          const startProcess = () => { clearInterval(processTimer); workspace.classList.add('conversation-mode'); processPanel.classList.remove('complete'); processPanel.hidden = false; processPanel.querySelector('.process-live').textContent = 'em andamento'; setProcessStep(0); let index = 1; processTimer = window.setInterval(() => { if (index >= processSteps.length) { clearInterval(processTimer); return; } setProcessStep(index); index += 1; }, 850); };
+          const finishProcess = () => { clearInterval(processTimer); processSteps.forEach((step) => { step.classList.remove('active'); step.classList.add('done'); }); processPanel.classList.add('complete'); processPanel.querySelector('.process-live').textContent = 'processamento concluído'; processPanel.querySelector('.process-detail').textContent = 'Resumo das ações realizadas pelo SESA'; processPanel.hidden = false; };
           const applyStatus = (data) => { Object.entries(data.stages || {}).forEach(([node, value]) => { const element = document.querySelector(`[data-node="${node}"]`); if (!element) return; element.dataset.state = value.state; const label = element.querySelector('.node-status'); if (label) label.textContent = `${value.label} · ${value.progress}%`; }); if (connectionStatus) connectionStatus.innerHTML = `<span class="dot"></span> ${data.connection === 'backend-online' ? 'SESA disponível' : data.connection}`; };
           const refreshStatus = async () => { if (!API_BASE) { connectionStatus.innerHTML = '<span class="dot"></span> SESA local não conectado'; return; } try { const response = await fetch(`${API_BASE}/api/status`); if (!response.ok) throw new Error('status'); applyStatus(await response.json()); } catch { connectionStatus.innerHTML = '<span class="dot"></span> SESA temporariamente indisponível'; } };
           const getMasterToken = () => sessionStorage.getItem('sesa_master_token') || window.prompt('Informe o token Master do SESA:');
