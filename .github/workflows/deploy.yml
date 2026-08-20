@@ -35,6 +35,13 @@ jobs:
       - name: Build
         run: pnpm run build
 
+      - name: Incluir interfaces SESA no artefato publicado
+        run: |
+          rm -rf dist/SESA dist/SESA-v2
+          cp -R SESA dist/SESA
+          if [ -d SESA-v2 ]; then cp -R SESA-v2 dist/SESA-v2; fi
+
+
       - name: Mostrar estrutura da pasta dist
         run: |
           echo "===== Conteúdo da pasta dist ====="
