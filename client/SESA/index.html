@@ -74,7 +74,7 @@
       .process-live { color:var(--accent); }
       .process-steps { display:grid; gap:6px; }
       .process-step { display:flex; align-items:center; gap:8px; color:rgba(255,255,255,.56); font-family:'DM Mono',monospace; font-size:9px; line-height:1.4; }
-      .process-step::before { content:'○'; width:10px; color:rgba(107,214,111,.45); }
+      .process-step::before { content:'○'; width:10px; color:rgba(107,214,111,.30); }
       .process-step.active { color:#fff; }
       .process-step.active::before { content:'◌'; color:var(--accent); animation:sesa-spin 1s linear infinite; }
       .process-step.done { color:rgba(255,255,255,.82); }
@@ -123,7 +123,7 @@
       .legend .gold { background:#d9b76a; }
       .structure-note { margin-top:18px; padding:15px 17px; border-left:2px solid var(--accent); color:#7f8883; background:#101212; font-size:11px; line-height:1.6; }
       /* Identidade visual SESA: linhas neon e tipografia branca */
-      :root { --line:rgba(107,214,111,.62); --line-soft:rgba(107,214,111,.62); --muted:#fff; --soft:#fff; --text:#fff; --accent:#6bd66f; --accent-2:#6bd66f; --blue:#6bd66f; }
+      :root { --line:rgba(107,214,111,.38); --line-soft:rgba(107,214,111,.38); --muted:#fff; --soft:#fff; --text:#fff; --accent:#6bd66f; --accent-2:#6bd66f; --blue:#6bd66f; }
       body, .brand-name, .brand-sub, .nav a, .crumb, .crumb strong, .mode, .eyebrow, h1, .lead, .agent-name, .agent-role, .status, .message, .message strong, .message-meta, .node-title, .node-description, .layer-label, .stages-head h2, .stages-head p, .structure-note, .note, .links a, .sidebar-note { color:#fff; }
       .sidebar, .topbar, .chat, .chat-head, .composer, .new-chat, .message, .node, textarea, .links a, .structure-note { border-color:var(--line-soft); }
       .hierarchy::before, .tematic-grid::before, .support-grid::before, .node::after, .tematic-grid .node::before, .support-grid .node::before { background:var(--line-soft); }
