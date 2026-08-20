@@ -115,6 +115,18 @@
       .hierarchy::before, .tematic-grid::before, .support-grid::before, .node::after, .tematic-grid .node::before, .support-grid .node::before { background:var(--accent); }
       .new-chat:hover, .nav a:hover, .nav a.active, .links a:hover { border-color:var(--accent); color:#fff; }
       @media (max-width:720px) { .sidebar { position:relative; width:100%; height:auto; min-height:0; border-right:0; border-bottom:1px solid var(--line); } .sidebar-bottom { margin-top:25px; } .main { width:100%; margin-left:0; } .app { display:block; } .nav { grid-template-columns:repeat(2,1fr); } .nav-label { margin-top:19px; } .workspace { min-height:calc(100vh - 380px); } .topbar { padding:0 18px; } .stages-head { display:block; } .stages-head p { margin-top:15px; } .tematic-grid,.support-grid { grid-template-columns:1fr; gap:8px; } .tematic-grid::before,.support-grid::before,.tematic-grid .node::before,.support-grid .node::before { display:none; } .tematic-grid .node,.support-grid .node { min-height:0; } .hierarchy::before { left:14px; } .layer { align-items:stretch; } .layer-label { text-align:left; margin-left:5px; } .node { width:100%; } .node::after { right:auto; left:14px; } }
+      /* Traço mínimo: linhas neon finas, discretas e contínuas */
+      .sidebar, .topbar, .chat, .chat-head, .composer, .new-chat, .message, .node, textarea, .links a, .structure-note, .agent-icon { border-width:.5px; }
+      .sidebar { border-right-width:.5px; }
+      .topbar { border-bottom-width:.5px; }
+      .sidebar-bottom, .composer { border-top-width:.5px; }
+      .nav a:hover, .nav a.active, .new-chat:hover, .links a:hover { border-width:.5px; }
+      .nav a.active { box-shadow:inset .5px 0 0 var(--accent); }
+      .hierarchy::before, .tematic-grid::before, .support-grid::before, .node::after, .tematic-grid .node::before, .support-grid .node::before { width:.5px; height:.5px; }
+      .hierarchy::before { width:.5px; }
+      .tematic-grid::before, .support-grid::before { height:.5px; }
+      .structure-note { border-left-width:.5px; }
+      .node[data-state="active"] { box-shadow:0 0 0 .5px rgba(57,255,20,.20), 0 0 14px rgba(57,255,20,.04); }
     </style>
   </head>
   <body>
