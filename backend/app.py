@@ -158,6 +158,20 @@ def build_crewai_developer_agent() -> Any:
     )
 
 
+def process_events(mode: str, groq_enabled: bool) -> list[dict[str, str]]:
+    events = [
+        {"key": "receber", "label": "Solicitação recebida pelo SESA"},
+        {"key": "compreender", "label": "Agente Gestor validou o modo de atendimento"},
+        {"key": "consultar", "label": "Contexto técnico preparado para a análise"},
+    ]
+    if groq_enabled:
+        events.append({"key": "consultar", "label": "Solicitando resposta à LLM configurada"})
+    else:
+        events.append({"key": "consultar", "label": "Modo local ativo; LLM não configurada"})
+    events.append({"key": "responder", "label": "Orientação do SESA preparada"})
+    return events
+
+
 def groq_chat(message: str, mode: str) -> str:
     api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
@@ -215,12 +229,14 @@ def chat(request: ChatRequest) -> dict[str, Any]:
     status["stages"]["gestor"] = {"label": "Processando solicitação", "state": "active", "progress": 45, "note": "Modo Desenvolvedor Master"}
     write_status(status)
     try:
+        groq_enabled = bool(os.getenv("GROQ_API_KEY"))
         answer = groq_chat(request.message, request.mode)
+        events = process_events(request.mode, groq_enabled)
         status = read_status()
         status["stages"]["gestor"] = {"label": "Modo Desenvolvedor ativo", "state": "active", "progress": 50, "note": "Solicitação concluída"}
         write_status(status)
         audit("chat", "master", {"mode": request.mode, "message_length": len(request.message), "crewai_available": bool(build_crewai_developer_agent())})
-        return {"answer": answer, "mode": request.mode, "updated_at": now_iso()}
+        return {"answer": answer, "mode": request.mode, "events": events, "updated_at": now_iso()}
     except Exception:
         status = read_status()
         status["stages"]["gestor"] = {"label": "Falha controlada", "state": "blocked", "progress": 45, "note": "Verificar logs do backend"}
