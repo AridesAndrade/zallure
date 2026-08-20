@@ -20,7 +20,7 @@ except ImportError:  # The backend remains inspectable before dependencies are i
     Agent = Crew = Process = Task = None
 
 ROOT = Path(__file__).resolve().parent
-DRIVE_ROOT = Path(os.getenv("SESA_DRIVE_ROOT", r"G:\\Meu Drive\\Projeto_SESA"))
+DRIVE_ROOT = Path(os.getenv("SESA_DRIVE_ROOT", r"G:\Meu Drive\Projeto_SESA"))
 DRIVE_FOLDERS = {
     "knowledge": "01_Conhecimento_Aprovado",
     "training": "02_Preparacao_e_Treinamento",
