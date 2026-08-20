@@ -14,6 +14,8 @@ from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+from auth import authenticate_user, create_user, init_users, issue_session, list_users, set_user_active, set_user_password, verify_session
+
 try:
     from crewai import Agent, Crew, Process, Task
 except ImportError:  # The backend remains inspectable before dependencies are installed.
@@ -61,6 +63,25 @@ DEFAULT_STATUS: dict[str, Any] = {
 class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=12000)
     mode: str = Field(default="developer", pattern="^(developer|operational)$")
+
+
+class LoginRequest(BaseModel):
+    username: str = Field(min_length=1, max_length=80)
+    password: str = Field(min_length=1, max_length=200)
+
+
+class UserCreateRequest(BaseModel):
+    username: str = Field(min_length=3, max_length=80, pattern=r"^[a-zA-Z0-9_.-]+$")
+    role: str = Field(min_length=2, max_length=40)
+    password: str = Field(min_length=1, max_length=200)
+
+
+class UserPasswordRequest(BaseModel):
+    password: str = Field(min_length=1, max_length=200)
+
+
+class UserStatusRequest(BaseModel):
+    active: bool
 
 
 class StatusUpdate(BaseModel):
@@ -130,9 +151,11 @@ def require_master(authorization: str | None = Header(default=None)) -> str:
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Autorização Master necessária")
     supplied = authorization.removeprefix("Bearer ").strip()
-    if not hmac.compare_digest(hashlib.sha256(supplied.encode()).digest(), hashlib.sha256(configured.encode()).digest()):
+    direct_valid = hmac.compare_digest(hashlib.sha256(supplied.encode()).digest(), hashlib.sha256(configured.encode()).digest())
+    session_user = verify_session(supplied, required_role="Master")
+    if not direct_valid and not session_user:
         raise HTTPException(status_code=403, detail="Token Master inválido")
-    return "master"
+    return session_user["username"] if session_user else "master"
 
 
 def build_developer_context() -> str:
@@ -193,6 +216,7 @@ def groq_chat(message: str, mode: str) -> str:
 def startup() -> None:
     read_status()
     init_audit()
+    init_users()
 
 
 @app.get("/api/health")
@@ -203,6 +227,60 @@ def health() -> dict[str, str]:
 @app.get("/api/status")
 def status() -> dict[str, Any]:
     return read_status()
+
+
+@app.post("/api/auth/login")
+def login(request: LoginRequest) -> dict[str, Any]:
+    user = authenticate_user(request.username, request.password)
+    if not user:
+        raise HTTPException(status_code=401, detail="Usuário ou senha inválidos")
+    if user["role"] != "Master":
+        audit("auth.login", user["username"], {"role": user["role"], "mode": "operational"})
+        return {"authenticated": True, "mode": "operational", "user": user}
+    token = issue_session(user)
+    audit("auth.login", user["username"], {"role": user["role"], "mode": "developer"})
+    return {"authenticated": True, "mode": "developer", "user": user, "token": token}
+
+
+@app.get("/api/auth/master", dependencies=[Depends(require_master)])
+def master_authentication() -> dict[str, Any]:
+    audit("auth.master", "master", {"result": "authenticated"})
+    return {"authenticated": True, "mode": "developer"}
+
+
+@app.get("/api/users", dependencies=[Depends(require_master)])
+def users() -> dict[str, Any]:
+    return {"users": list_users()}
+
+
+@app.post("/api/users", dependencies=[Depends(require_master)])
+def add_user(request: UserCreateRequest) -> dict[str, Any]:
+    try:
+        user = create_user(request.username, request.role, request.password)
+    except sqlite3.IntegrityError:
+        raise HTTPException(status_code=409, detail="Usuário já existe") from None
+    audit("user.create", "master", {"username": user["username"], "role": user["role"]})
+    return user
+
+
+@app.patch("/api/users/{username}/password", dependencies=[Depends(require_master)])
+def change_user_password(username: str, request: UserPasswordRequest) -> dict[str, bool]:
+    try:
+        set_user_password(username, request.password)
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado") from None
+    audit("user.password.reset", "master", {"username": username})
+    return {"updated": True}
+
+
+@app.patch("/api/users/{username}/status", dependencies=[Depends(require_master)])
+def change_user_status(username: str, request: UserStatusRequest) -> dict[str, bool]:
+    try:
+        set_user_active(username, request.active)
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado") from None
+    audit("user.status.update", "master", {"username": username, "active": request.active})
+    return {"updated": True}
 
 
 @app.get("/api/drive/overview", dependencies=[Depends(require_master)])
@@ -223,19 +301,23 @@ def update_status(update: StatusUpdate) -> dict[str, Any]:
     return status
 
 
-@app.post("/api/chat", dependencies=[Depends(require_master)])
-def chat(request: ChatRequest) -> dict[str, Any]:
+@app.post("/api/chat")
+def chat(request: ChatRequest, authorization: str | None = Header(default=None)) -> dict[str, Any]:
+    actor = "gestor"
+    if request.mode == "developer":
+        require_master(authorization)
+        actor = "master"
     status = read_status()
-    status["stages"]["gestor"] = {"label": "Processando solicitação", "state": "active", "progress": 45, "note": "Modo Desenvolvedor Master"}
+    status["stages"]["gestor"] = {"label": "Processando solicitação", "state": "active", "progress": 45, "note": f"Modo {request.mode}"}
     write_status(status)
     try:
         groq_enabled = bool(os.getenv("GROQ_API_KEY"))
         answer = groq_chat(request.message, request.mode)
         events = process_events(request.mode, groq_enabled)
         status = read_status()
-        status["stages"]["gestor"] = {"label": "Modo Desenvolvedor ativo", "state": "active", "progress": 50, "note": "Solicitação concluída"}
+        status["stages"]["gestor"] = {"label": "Atendimento concluído", "state": "active", "progress": 50, "note": f"Modo {request.mode}"}
         write_status(status)
-        audit("chat", "master", {"mode": request.mode, "message_length": len(request.message), "crewai_available": bool(build_crewai_developer_agent())})
+        audit("chat", actor, {"mode": request.mode, "message_length": len(request.message), "crewai_available": bool(build_crewai_developer_agent())})
         return {"answer": answer, "mode": request.mode, "events": events, "updated_at": now_iso()}
     except Exception:
         status = read_status()
