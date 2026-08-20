@@ -28,37 +28,37 @@
       .new-chat { display:flex; align-items:center; gap:10px; width:100%; padding:11px 12px; border:1px solid #333737; border-radius:9px; color:var(--text); background:#171919; text-align:left; cursor:pointer; transition:.18s ease; }
       .new-chat:hover { border-color:#58615e; background:#1e2120; }
       .new-chat span { color:var(--accent); font-size:18px; line-height:1; }
-      .nav-label { margin:26px 10px 8px; color:#626967; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.13em; text-transform:uppercase; }
+      .nav-label { margin:26px 10px 8px; color:var(--accent); font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.13em; text-transform:uppercase; }
       .nav { display:grid; gap:3px; }
-      .nav a { display:flex; align-items:center; gap:11px; padding:10px 11px; border-radius:8px; color:#9ba29f; font-size:12px; text-decoration:none; transition:.18s ease; }
-      .nav a:hover,.nav a.active { color:var(--text); background:#1a1d1c; }
+      .nav a { display:flex; align-items:center; gap:11px; padding:10px 11px; border:1px solid transparent; border-radius:8px; color:#fff; font-size:12px; text-decoration:none; transition:.18s ease; }
+      .nav a:hover,.nav a.active { color:#fff; border-color:var(--accent); background:#101a0d; }
       .nav a.active { box-shadow:inset 2px 0 0 var(--accent); }
       .nav-icon { display:grid; place-items:center; width:18px; color:#77807c; font-size:13px; }
       .nav a.active .nav-icon { color:var(--accent); }
       .sidebar-bottom { margin-top:auto; padding:14px 10px 2px; border-top:1px solid var(--line); }
       .connection { display:flex; align-items:center; gap:8px; color:#878f8b; font-family:'DM Mono',monospace; font-size:9px; }
       .dot { width:6px; height:6px; border-radius:50%; background:#e9a938; box-shadow:0 0 0 3px rgba(233,169,56,.12); }
-      .sidebar-note { margin:10px 0 0; color:#555d59; font-size:10px; line-height:1.55; }
+      .sidebar-note { margin:10px 0 0; color:#fff; font-size:10px; line-height:1.55; }
       .main { width:calc(100% - 252px); min-height:100vh; margin-left:252px; }
       .topbar { display:flex; align-items:center; justify-content:space-between; min-height:57px; padding:0 28px; border-bottom:1px solid var(--line); background:rgba(11,12,12,.88); }
-      .crumb { color:#777f7b; font-family:'DM Mono',monospace; font-size:10px; }
+      .crumb { color:#fff; font-family:'DM Mono',monospace; font-size:10px; }
       .crumb strong { color:#bbc4c0; font-weight:400; }
       .mode { padding:5px 8px; border:1px solid #42472a; border-radius:5px; color:var(--accent); background:#171a0d; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.04em; text-transform:uppercase; }
       .workspace { display:flex; min-height:calc(100vh - 57px); flex-direction:column; align-items:center; padding:clamp(34px,8vh,88px) 22px 40px; }
       .hero { width:min(720px,100%); text-align:center; }
       .eyebrow { margin:0 0 14px; color:var(--accent); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; }
       h1 { margin:0; color:#f5f6f3; font-size:clamp(29px,4.4vw,47px); font-weight:600; letter-spacing:-.065em; line-height:1.06; }
-      .lead { max-width:560px; margin:17px auto 0; color:#858d89; font-size:13px; line-height:1.7; }
+      .lead { max-width:560px; margin:17px auto 0; color:#fff; font-size:13px; line-height:1.7; }
       .chat { width:min(780px,100%); margin-top:44px; border:1px solid var(--line); border-radius:12px; background:var(--panel); box-shadow:0 24px 80px rgba(0,0,0,.28); }
       .chat-head { display:flex; align-items:center; justify-content:space-between; padding:15px 17px; border-bottom:1px solid var(--line); }
       .agent { display:flex; align-items:center; gap:10px; }
-      .agent-icon { display:grid; place-items:center; width:28px; height:28px; border-radius:8px; color:#111; background:var(--accent); font-size:14px; font-weight:800; }
+      .agent-icon { display:block; width:42px; height:42px; border:1px solid var(--accent); border-radius:50%; object-fit:cover; object-position:center top; background:#000; box-shadow:0 0 16px rgba(217,255,69,.18); }
       .agent-name { color:#e8ebe8; font-size:12px; font-weight:600; }
       .agent-role { margin-top:3px; color:#737b77; font-family:'DM Mono',monospace; font-size:9px; }
       .status { display:flex; align-items:center; gap:7px; color:#777f7b; font-family:'DM Mono',monospace; font-size:9px; }
       .status .dot { background:#dbab3a; box-shadow:none; }
       .messages { min-height:188px; padding:20px; background:#0d0f0f; }
-      .message { max-width:600px; padding:15px 16px; border:1px solid #2d3230; border-radius:9px; color:#adb5b1; background:#141716; font-size:12px; line-height:1.7; text-align:left; }
+      .message { max-width:600px; padding:15px 16px; border:1px solid var(--accent); border-radius:9px; color:#fff; background:#0c130c; font-size:12px; line-height:1.7; text-align:left; }
       .message strong { color:#e5e9e5; font-weight:600; }
       .message-meta { margin-top:9px; color:#68716c; font-family:'DM Mono',monospace; font-size:8px; letter-spacing:.03em; text-transform:uppercase; }
       .composer { display:flex; align-items:flex-end; gap:10px; padding:12px; border-top:1px solid var(--line); background:#111313; }
@@ -79,7 +79,7 @@
       .hierarchy::before { content:''; position:absolute; top:58px; bottom:58px; left:50%; width:1px; background:linear-gradient(var(--accent),#343a37 42%,#343a37 72%,#4a4f4b); opacity:.55; }
       .layer { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; }
       .layer-label { margin:10px 0 9px; color:#616a65; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.13em; text-transform:uppercase; }
-      .node { position:relative; width:min(370px,100%); padding:15px 17px; border:1px solid #3d4927; border-radius:10px; background:#121611; box-shadow:0 0 0 1px rgba(217,255,69,.02); }
+      .node { position:relative; width:min(370px,100%); padding:15px 17px; border:1px solid var(--accent); border-radius:10px; color:#fff; background:#0b100b; box-shadow:0 0 0 1px rgba(217,255,69,.08); }
       .node::after { content:''; position:absolute; right:50%; bottom:-16px; width:1px; height:16px; background:#4a514d; }
       .node:last-child::after { display:none; }
       .node-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
@@ -108,6 +108,12 @@
       .legend .blue { background:var(--blue); }
       .legend .gold { background:#d9b76a; }
       .structure-note { margin-top:18px; padding:15px 17px; border-left:2px solid var(--accent); color:#7f8883; background:#101212; font-size:11px; line-height:1.6; }
+      /* Identidade visual SESA: linhas neon e tipografia branca */
+      :root { --line:#39ff14; --muted:#fff; --soft:#fff; --text:#fff; --accent:#39ff14; --accent-2:#39ff14; --blue:#39ff14; }
+      body, .brand-name, .brand-sub, .nav a, .crumb, .crumb strong, .mode, .eyebrow, h1, .lead, .agent-name, .agent-role, .status, .message, .message strong, .message-meta, .node-title, .node-description, .layer-label, .stages-head h2, .stages-head p, .structure-note, .note, .links a, .sidebar-note { color:#fff; }
+      .sidebar, .topbar, .chat, .chat-head, .composer, .new-chat, .message, .node, textarea, .links a, .structure-note { border-color:var(--accent); }
+      .hierarchy::before, .tematic-grid::before, .support-grid::before, .node::after, .tematic-grid .node::before, .support-grid .node::before { background:var(--accent); }
+      .new-chat:hover, .nav a:hover, .nav a.active, .links a:hover { border-color:var(--accent); color:#fff; }
       @media (max-width:720px) { .sidebar { position:relative; width:100%; height:auto; min-height:0; border-right:0; border-bottom:1px solid var(--line); } .sidebar-bottom { margin-top:25px; } .main { width:100%; margin-left:0; } .app { display:block; } .nav { grid-template-columns:repeat(2,1fr); } .nav-label { margin-top:19px; } .workspace { min-height:calc(100vh - 380px); } .topbar { padding:0 18px; } .stages-head { display:block; } .stages-head p { margin-top:15px; } .tematic-grid,.support-grid { grid-template-columns:1fr; gap:8px; } .tematic-grid::before,.support-grid::before,.tematic-grid .node::before,.support-grid .node::before { display:none; } .tematic-grid .node,.support-grid .node { min-height:0; } .hierarchy::before { left:14px; } .layer { align-items:stretch; } .layer-label { text-align:left; margin-left:5px; } .node { width:100%; } .node::after { right:auto; left:14px; } }
     </style>
   </head>
@@ -176,9 +182,9 @@ Error generating stack: `+l.message+`
       <aside class="sidebar">
         <div class="brand"><div class="brand-mark">S</div><div><div class="brand-name">SESA</div><div class="brand-sub">Secretaria de Saúde</div></div></div>
         <button class="new-chat" type="button"><span>＋</span> Nova conversa</button>
-        <div class="nav-label">Projeto</div>
-        <nav class="nav" aria-label="Navegação do projeto SESA">
-          <a class="active" href="./"><span class="nav-icon">◈</span> Agente Gestor</a>
+        <div class="nav-label">Atendimento SESA</div>
+        <nav class="nav" aria-label="Navegação do SESA">
+          <a class="active" href="./"><span class="nav-icon">◈</span> Conversar com o SESA</a>
           <a href="#juridico"><span class="nav-icon">§</span> Agente Jurídico</a>
           <a href="#dados"><span class="nav-icon">⌁</span> Agente Dados</a>
           <a href="#estatistico"><span class="nav-icon">▥</span> Agente Estatístico</a>
@@ -186,22 +192,22 @@ Error generating stack: `+l.message+`
         </nav>
         <div class="nav-label">Acesso rápido</div>
         <nav class="nav"><a href="#etapas" data-view="stages"><span class="nav-icon">◫</span> Visual / Etapas</a><a href="#fontes"><span class="nav-icon">⌘</span> Bases e fontes</a></nav>
-        <div class="sidebar-bottom"><div class="connection"><span class="dot"></span> Backend não conectado</div><p class="sidebar-note">Interface de validação. Nenhum dado real ou credencial é mantido nesta página.</p></div>
+        <div class="sidebar-bottom"><div class="connection"><span class="dot"></span> SESA disponível</div><p class="sidebar-note">Estou aqui para receber sua solicitação e orientar o próximo passo.</p></div>
       </aside>
       <main class="main">
-        <header class="topbar"><div class="crumb">workspace / <strong>SESA</strong> / agente-gestor</div><div class="mode">ambiente de teste</div></header>
+        <header class="topbar"><div class="crumb"><strong>SESA</strong> / atendimento</div><div class="mode">disponível</div></header>
         <section class="workspace">
-          <div class="hero"><p class="eyebrow">Agente Gestor · SESA</p><h1>Como posso ajudar a Secretaria hoje?</h1><p class="lead">A interface única para encaminhar solicitações aos agentes especializados, consultar bases autorizadas e organizar respostas para tomada de decisão.</p></div>
-          <section class="chat" aria-label="Chat do Agente Gestor"><div class="chat-head"><div class="agent"><div class="agent-icon">✦</div><div><div class="agent-name">Agente Gestor</div><div class="agent-role">orquestração · contexto · respostas</div></div></div><div class="status" id="connection-status"><span class="dot"></span> conectando backend</div></div><div class="messages" id="messages"><div class="message"><strong>Olá. Sou o Agente Gestor do SESA.</strong><br />O modo Desenvolvedor conecta o chat Master ao backend Python, ao CrewAI e às integrações autorizadas. O mapa visual será atualizado conforme o backend registrar o avanço de cada agente.<div class="message-meta">modo desenvolvedor · piloto jurídico</div></div></div><div class="composer"><textarea id="message-input" aria-label="Mensagem para o Agente Gestor" placeholder="Envie uma solicitação de desenvolvimento..."></textarea><button class="send" id="send-button" type="button" aria-label="Enviar mensagem">↗</button></div></section>
-          <p class="note">Sem dados reais · Sem credenciais no frontend · Interface estática para validação da arquitetura</p>
-          <div class="links"><a href="#juridico">Piloto Jurídico</a><a href="#dados">Agente Dados</a><a href="#estatistico">Agente Estatístico</a><a href="#relatorios">Agente Relatórios</a></div>
+          <div class="hero"><p class="eyebrow">SESA · Secretaria de Saúde</p><h1>Como posso ajudar você hoje?</h1><p class="lead">Estou disponível para receber sua solicitação, compreender o que você precisa e encaminhar a resposta adequada.</p></div>
+          <section class="chat" aria-label="Conversa com o SESA"><div class="chat-head"><div class="agent"><img class="agent-icon" src="../assets/persona_sesa_masculina_linear-DhfPazl-.png" alt="Persona visual masculina do SESA" /><div><div class="agent-name">SESA</div><div class="agent-role">disponibilidade · orientação · resposta</div></div></div><div class="status" id="connection-status"><span class="dot"></span> SESA disponível</div></div><div class="messages" id="messages"><div class="message"><strong>Olá. Eu sou o SESA.</strong><br />Estou disponível para ouvir sua solicitação e ajudar você a encontrar a orientação ou o encaminhamento adequado.<div class="message-meta">atendimento institucional</div></div></div><div class="composer"><textarea id="message-input" aria-label="Mensagem para o SESA" placeholder="Escreva sua solicitação para o SESA..."></textarea><button class="send" id="send-button" type="button" aria-label="Enviar mensagem">↗</button></div></section>
+          <p class="note">Suas solicitações são recebidas pelo SESA e encaminhadas conforme as autorizações da Secretaria.</p>
+          <div class="links"><a href="#juridico">Atendimento Jurídico</a><a href="#dados">Agente Dados</a><a href="#estatistico">Agente Estatístico</a><a href="#relatorios">Agente Relatórios</a></div>
         </section>
-        <section class="stages" id="etapas" aria-label="Etapas implementadas do projeto SESA">
-          <div class="stages-head"><div><p class="eyebrow">Mapa do projeto · Visual</p><h2>Etapas implementadas</h2></div><p>Acompanhamento visual da estrutura oficial do SESA. O estado de cada camada será atualizado conforme o projeto avançar.</p></div>
+        <section class="stages" id="etapas" aria-label="Estrutura de atendimento do SESA">
+          <div class="stages-head"><div><p class="eyebrow">SESA · Estrutura de atendimento</p><h2>Como o SESA atende</h2></div><p>O SESA organiza cada solicitação entre suas áreas de conhecimento para oferecer uma resposta adequada e segura.</p></div>
           <div class="hierarchy" aria-label="Hierarquia e fluxo de agentes do SESA">
             <div class="layer"><div class="layer-label">Camada 01 · decisão</div><div class="node node-users"><div class="node-head"><div class="node-title">Usuários / Secretaria</div><div class="node-status">Origem</div></div><div class="node-description">Tomada de decisão estratégica e solicitações ao sistema.</div></div></div>
-            <div class="layer"><div class="layer-label">Camada 02 · orquestração</div><div class="node node-manager" data-node="gestor"><div class="node-head"><div class="node-title">Agente Gestor</div><div class="node-status">Interface única</div></div><div class="node-description">Recebe solicitações, interpreta contexto, orquestra agentes e entrega respostas.</div></div></div>
-            <div class="layer"><div class="layer-label">Camada 03 · domínio</div><div class="tematic-grid"><div class="node" data-node="saude"><div class="node-head"><div class="node-title">Agente Saúde</div><div class="node-status">Planejado</div></div><div class="node-description">Dados, indicadores, produção, qualidade e assistência.</div></div><div class="node node-manager" data-node="juridico"><div class="node-head"><div class="node-title">Agente Jurídico</div><div class="node-status">Piloto</div></div><div class="node-description">Normas, legislação, pareceres e compliance.</div></div><div class="node" data-node="financeiro"><div class="node-head"><div class="node-title">Agente Financeiro</div><div class="node-status">Planejado</div></div><div class="node-description">Dados financeiros, orçamento e recursos.</div></div><div class="node" data-node="compras"><div class="node-head"><div class="node-title">Agente Compras</div><div class="node-status">Planejado</div></div><div class="node-description">Consumo, planejamento, estoque e aquisições.</div></div><div class="node" data-node="servidor_publico"><div class="node-head"><div class="node-title">Agente Público</div><div class="node-status">Planejado</div></div><div class="node-description">Padrões internos, tons e respostas institucionais.</div></div></div></div>
+            <div class="layer"><div class="layer-label">Camada 02 · atendimento</div><div class="node node-manager" data-node="gestor"><div class="node-head"><div class="node-title">SESA</div><div class="node-status">Atendimento</div></div><div class="node-description">Recebe sua solicitação, compreende o contexto e entrega a orientação adequada.</div></div></div>
+            <div class="layer"><div class="layer-label">Camada 03 · domínio</div><div class="tematic-grid"><div class="node" data-node="saude"><div class="node-head"><div class="node-title">Agente Saúde</div><div class="node-status">Planejado</div></div><div class="node-description">Dados, indicadores, produção, qualidade e assistência.</div></div><div class="node node-manager" data-node="juridico"><div class="node-head"><div class="node-title">Agente Jurídico</div><div class="node-status">Ativo</div></div><div class="node-description">Normas, legislação, pareceres e compliance.</div></div><div class="node" data-node="financeiro"><div class="node-head"><div class="node-title">Agente Financeiro</div><div class="node-status">Planejado</div></div><div class="node-description">Dados financeiros, orçamento e recursos.</div></div><div class="node" data-node="compras"><div class="node-head"><div class="node-title">Agente Compras</div><div class="node-status">Planejado</div></div><div class="node-description">Consumo, planejamento, estoque e aquisições.</div></div><div class="node" data-node="servidor_publico"><div class="node-head"><div class="node-title">Agente Público</div><div class="node-status">Planejado</div></div><div class="node-description">Padrões internos, tons e respostas institucionais.</div></div></div></div>
             <div class="layer"><div class="layer-label">Camada 04 · apoio compartilhado</div><div class="support-grid"><div class="node" data-node="dados"><div class="node-head"><div class="node-title">Agente Dados</div><div class="node-status">Planejado</div></div><div class="node-description">Coleta, extração, validação e preparação.</div></div><div class="node" data-node="estatistico"><div class="node-head"><div class="node-title">Agente Estatístico</div><div class="node-status">Planejado</div></div><div class="node-description">Cálculos, análises, padrões e tendências.</div></div><div class="node" data-node="relatorios"><div class="node-head"><div class="node-title">Agente Relatórios</div><div class="node-status">Planejado</div></div><div class="node-description">Relatórios, sumários e conteúdos estruturados.</div></div></div></div>
             <div class="layer"><div class="layer-label">Camada 05 · fontes</div><div class="node bases" data-node="bases"><div class="node-head"><div class="node-title">Maestro · arquivos · bases de dados</div><div class="node-status">Em definição</div></div><div class="node-description">Fontes operacionais, assistenciais, financeiras e administrativas, acessadas conforme autorização.</div></div></div>
           </div>
@@ -219,11 +225,11 @@ Error generating stack: `+l.message+`
           document.querySelectorAll('[data-view="stages"]').forEach((link) => link.addEventListener('click', (event) => { event.preventDefault(); mainView.style.display = 'none'; stagesView.classList.add('show'); window.scrollTo({ top: 0, behavior: 'smooth' }); }));
           document.querySelector('.brand').addEventListener('click', () => { mainView.style.display = ''; stagesView.classList.remove('show'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
           const escapeHtml = (value) => value.replace(/[&<>\"]/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '\"':'&quot;' }[char]));
-          const appendMessage = (text, author) => { const item = document.createElement('div'); item.className = 'message'; item.innerHTML = `<strong>${escapeHtml(author)}</strong><br />${escapeHtml(text).replace(/\n/g, '<br />')}<div class="message-meta">agente gestor · ${new Date().toLocaleTimeString('pt-BR')}</div>`; messages.appendChild(item); };
-          const applyStatus = (data) => { Object.entries(data.stages || {}).forEach(([node, value]) => { const element = document.querySelector(`[data-node="${node}"]`); if (!element) return; element.dataset.state = value.state; const label = element.querySelector('.node-status'); if (label) label.textContent = `${value.label} · ${value.progress}%`; }); if (connectionStatus) connectionStatus.innerHTML = `<span class="dot"></span> ${data.connection === 'backend-online' ? 'backend online' : data.connection}`; };
-          const refreshStatus = async () => { if (!API_BASE) { connectionStatus.innerHTML = '<span class="dot"></span> backend não configurado'; return; } try { const response = await fetch(`${API_BASE}/api/status`); if (!response.ok) throw new Error('status'); applyStatus(await response.json()); } catch { connectionStatus.innerHTML = '<span class="dot"></span> backend indisponível'; } };
+          const appendMessage = (text, author) => { const item = document.createElement('div'); item.className = 'message'; item.innerHTML = `<strong>${escapeHtml(author)}</strong><br />${escapeHtml(text).replace(/\n/g, '<br />')}<div class="message-meta">SESA · ${new Date().toLocaleTimeString('pt-BR')}</div>`; messages.appendChild(item); };
+          const applyStatus = (data) => { Object.entries(data.stages || {}).forEach(([node, value]) => { const element = document.querySelector(`[data-node="${node}"]`); if (!element) return; element.dataset.state = value.state; const label = element.querySelector('.node-status'); if (label) label.textContent = `${value.label} · ${value.progress}%`; }); if (connectionStatus) connectionStatus.innerHTML = `<span class="dot"></span> ${data.connection === 'backend-online' ? 'SESA disponível' : data.connection}`; };
+          const refreshStatus = async () => { if (!API_BASE) { connectionStatus.innerHTML = '<span class="dot"></span> SESA local não conectado'; return; } try { const response = await fetch(`${API_BASE}/api/status`); if (!response.ok) throw new Error('status'); applyStatus(await response.json()); } catch { connectionStatus.innerHTML = '<span class="dot"></span> SESA temporariamente indisponível'; } };
           const getMasterToken = () => sessionStorage.getItem('sesa_master_token') || window.prompt('Informe o token Master do SESA:');
-          send.addEventListener('click', async () => { const message = input.value.trim(); if (!message || !API_BASE) return; send.disabled = true; appendMessage(message, 'Master'); try { const masterToken = getMasterToken(); if (!masterToken) throw new Error('Token Master não informado'); sessionStorage.setItem('sesa_master_token', masterToken); const response = await fetch(`${API_BASE}/api/chat`, { method:'POST', headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${masterToken}` }, body:JSON.stringify({ message, mode:'developer' }) }); const body = await response.json(); if (!response.ok) throw new Error(body.detail || 'Falha no backend'); appendMessage(body.answer, 'Agente Gestor · Desenvolvedor'); await refreshStatus(); } catch (error) { appendMessage(`Não foi possível concluir a solicitação: ${error.message}`, 'Sistema'); } finally { input.value = ''; send.disabled = false; } });
+          send.addEventListener('click', async () => { const message = input.value.trim(); if (!message || !API_BASE) return; send.disabled = true; appendMessage(message, 'Você'); try { const masterToken = getMasterToken(); if (!masterToken) throw new Error('Token Master não informado'); sessionStorage.setItem('sesa_master_token', masterToken); const response = await fetch(`${API_BASE}/api/chat`, { method:'POST', headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${masterToken}` }, body:JSON.stringify({ message, mode:'developer' }) }); const body = await response.json(); if (!response.ok) throw new Error(body.detail || 'Falha no backend'); appendMessage(body.answer, 'SESA'); await refreshStatus(); } catch (error) { appendMessage(`Não foi possível concluir sua solicitação: ${error.message}`, 'SESA'); } finally { input.value = ''; send.disabled = false; } });
           input.addEventListener('keydown', (event) => { if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') send.click(); });
           refreshStatus();
           if (API_BASE) window.setInterval(refreshStatus, 15000);
