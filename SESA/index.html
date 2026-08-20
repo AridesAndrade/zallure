@@ -12,7 +12,7 @@
     <style>
       .node[data-state="done"] { border-color:#5f8f39; background:#172112; }
       .node[data-state="blocked"] { border-color:#8f4b4b; background:#211313; }
-      .node[data-state="active"] { box-shadow:0 0 0 1px rgba(217,255,69,.22), 0 0 24px rgba(217,255,69,.06); }
+      .node[data-state="active"] { box-shadow:0 0 0 1px rgba(107,214,111,.22), 0 0 24px rgba(107,214,111,.06); }
       .node[data-state="planned"] { opacity:.78; }
       :root { --bg:#080909; --panel:#101111; --panel-2:#151717; --line:#292c2c; --text:#f1f2f0; --muted:#8a918e; --soft:#c4cbc7; --accent:#d9ff45; --accent-2:#a6cc31; --blue:#84a8ff; }
       * { box-sizing:border-box; }
@@ -52,7 +52,7 @@
       .chat { width:min(780px,100%); margin-top:44px; border:1px solid var(--line); border-radius:12px; background:var(--panel); box-shadow:0 24px 80px rgba(0,0,0,.28); }
       .chat-head { display:flex; align-items:center; justify-content:space-between; padding:15px 17px; border-bottom:1px solid var(--line); }
       .agent { display:flex; align-items:center; gap:10px; }
-      .agent-icon { display:block; width:42px; height:42px; border:1px solid var(--accent); border-radius:50%; object-fit:cover; object-position:center top; background:#000; box-shadow:0 0 16px rgba(217,255,69,.18); }
+      .agent-icon { display:block; flex:0 0 auto; width:64px; height:64px; border:1px solid var(--accent); border-radius:50%; object-fit:cover; object-position:center top; background:#000; box-shadow:0 0 16px rgba(107,214,111,.18); }
       .agent-name { color:#e8ebe8; font-size:12px; font-weight:600; }
       .agent-role { margin-top:3px; color:#737b77; font-family:'DM Mono',monospace; font-size:9px; }
       .status { display:flex; align-items:center; gap:7px; color:#777f7b; font-family:'DM Mono',monospace; font-size:9px; }
@@ -63,7 +63,7 @@
       .message-meta { margin-top:9px; color:#68716c; font-family:'DM Mono',monospace; font-size:8px; letter-spacing:.03em; text-transform:uppercase; }
       .composer { display:flex; align-items:flex-end; gap:10px; padding:12px; border-top:1px solid var(--line); background:#111313; }
       textarea { flex:1; min-height:50px; resize:vertical; padding:13px 14px; border:1px solid #303634; border-radius:8px; outline:0; color:#e7ebe7; background:#0c0e0e; font-size:12px; line-height:1.5; }
-      textarea:focus { border-color:#687b42; box-shadow:0 0 0 3px rgba(217,255,69,.07); }
+      textarea:focus { border-color:#687b42; box-shadow:0 0 0 3px rgba(107,214,111,.07); }
       textarea::placeholder { color:#626a66; }
       .send { display:grid; place-items:center; width:50px; height:50px; border:1px solid #48542d; border-radius:8px; color:#111; background:var(--accent); cursor:not-allowed; opacity:.42; font-size:18px; }
       .note { width:min(780px,100%); margin:12px 0 0; color:#555e59; font-family:'DM Mono',monospace; font-size:9px; line-height:1.5; text-align:left; }
@@ -79,7 +79,7 @@
       .hierarchy::before { content:''; position:absolute; top:58px; bottom:58px; left:50%; width:1px; background:linear-gradient(var(--accent),#343a37 42%,#343a37 72%,#4a4f4b); opacity:.55; }
       .layer { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; }
       .layer-label { margin:10px 0 9px; color:#616a65; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.13em; text-transform:uppercase; }
-      .node { position:relative; width:min(370px,100%); padding:15px 17px; border:1px solid var(--accent); border-radius:10px; color:#fff; background:#0b100b; box-shadow:0 0 0 1px rgba(217,255,69,.08); }
+      .node { position:relative; width:min(370px,100%); padding:15px 17px; border:1px solid var(--accent); border-radius:10px; color:#fff; background:#0b100b; box-shadow:0 0 0 1px rgba(107,214,111,.08); }
       .node::after { content:''; position:absolute; right:50%; bottom:-16px; width:1px; height:16px; background:#4a514d; }
       .node:last-child::after { display:none; }
       .node-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
@@ -109,7 +109,7 @@
       .legend .gold { background:#d9b76a; }
       .structure-note { margin-top:18px; padding:15px 17px; border-left:2px solid var(--accent); color:#7f8883; background:#101212; font-size:11px; line-height:1.6; }
       /* Identidade visual SESA: linhas neon e tipografia branca */
-      :root { --line:#39ff14; --muted:#fff; --soft:#fff; --text:#fff; --accent:#39ff14; --accent-2:#39ff14; --blue:#39ff14; }
+      :root { --line:#6bd66f; --muted:#fff; --soft:#fff; --text:#fff; --accent:#6bd66f; --accent-2:#6bd66f; --blue:#6bd66f; }
       body, .brand-name, .brand-sub, .nav a, .crumb, .crumb strong, .mode, .eyebrow, h1, .lead, .agent-name, .agent-role, .status, .message, .message strong, .message-meta, .node-title, .node-description, .layer-label, .stages-head h2, .stages-head p, .structure-note, .note, .links a, .sidebar-note { color:#fff; }
       .sidebar, .topbar, .chat, .chat-head, .composer, .new-chat, .message, .node, textarea, .links a, .structure-note { border-color:var(--accent); }
       .hierarchy::before, .tematic-grid::before, .support-grid::before, .node::after, .tematic-grid .node::before, .support-grid .node::before { background:var(--accent); }
@@ -126,7 +126,7 @@
       .hierarchy::before { width:.5px; }
       .tematic-grid::before, .support-grid::before { height:.5px; }
       .structure-note { border-left-width:.5px; }
-      .node[data-state="active"] { box-shadow:0 0 0 .5px rgba(57,255,20,.20), 0 0 14px rgba(57,255,20,.04); }
+      .node[data-state="active"] { box-shadow:0 0 0 .5px rgba(107,214,111,.20), 0 0 14px rgba(107,214,111,.04); }
     </style>
   </head>
   <body>
@@ -210,7 +210,7 @@ Error generating stack: `+l.message+`
         <header class="topbar"><div class="crumb"><strong>SESA</strong> / atendimento</div><div class="mode">disponível</div></header>
         <section class="workspace">
           <div class="hero"><p class="eyebrow">SESA · Secretaria de Saúde</p><h1>Como posso ajudar você hoje?</h1><p class="lead">Estou disponível para receber sua solicitação, compreender o que você precisa e encaminhar a resposta adequada.</p></div>
-          <section class="chat" aria-label="Conversa com o SESA"><div class="chat-head"><div class="agent"><img class="agent-icon" src="../assets/persona_sesa_masculina_linear-DhfPazl-.png" alt="Persona visual masculina do SESA" /><div><div class="agent-name">SESA</div><div class="agent-role">disponibilidade · orientação · resposta</div></div></div><div class="status" id="connection-status"><span class="dot"></span> SESA disponível</div></div><div class="messages" id="messages"><div class="message"><strong>Olá. Eu sou o SESA.</strong><br />Estou disponível para ouvir sua solicitação e ajudar você a encontrar a orientação ou o encaminhamento adequado.<div class="message-meta">atendimento institucional</div></div></div><div class="composer"><textarea id="message-input" aria-label="Mensagem para o SESA" placeholder="Escreva sua solicitação para o SESA..."></textarea><button class="send" id="send-button" type="button" aria-label="Enviar mensagem">↗</button></div></section>
+          <section class="chat" aria-label="Conversa com o SESA"><div class="chat-head"><div class="agent"><img class="agent-icon" src="../assets/persona_sesa_masculina_linear-DhfPazl-.png" alt="SESA — Agente da Secretaria de Saúde de Louveira" /><div><div class="agent-name">SESA</div><div class="agent-role">disponibilidade · orientação · resposta</div></div></div><div class="status" id="connection-status"><span class="dot"></span> SESA disponível</div></div><div class="messages" id="messages"><div class="message"><strong>Olá. Eu sou o SESA.</strong><br />Estou disponível para ouvir sua solicitação e ajudar você a encontrar a orientação ou o encaminhamento adequado.<div class="message-meta">atendimento institucional</div></div></div><div class="composer"><textarea id="message-input" aria-label="Mensagem para o SESA" placeholder="Escreva sua solicitação para o SESA..."></textarea><button class="send" id="send-button" type="button" aria-label="Enviar mensagem">↗</button></div></section>
           <p class="note">Suas solicitações são recebidas pelo SESA e encaminhadas conforme as autorizações da Secretaria.</p>
           <div class="links"><a href="#juridico">Atendimento Jurídico</a><a href="#dados">Agente Dados</a><a href="#estatistico">Agente Estatístico</a><a href="#relatorios">Agente Relatórios</a></div>
         </section>
