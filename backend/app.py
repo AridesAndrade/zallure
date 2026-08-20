@@ -20,6 +20,14 @@ except ImportError:  # The backend remains inspectable before dependencies are i
     Agent = Crew = Process = Task = None
 
 ROOT = Path(__file__).resolve().parent
+DRIVE_ROOT = Path(os.getenv("SESA_DRIVE_ROOT", r"G:\\Meu Drive\\Projeto_SESA"))
+DRIVE_FOLDERS = {
+    "knowledge": "01_Conhecimento_Aprovado",
+    "training": "02_Preparacao_e_Treinamento",
+    "production": "03_Producao_Autorizada",
+    "audit": "04_Auditoria",
+    "master": "05_Administracao_Master",
+}
 STATE_FILE = Path(os.getenv("SESA_STATUS_FILE", ROOT / "status.json"))
 AUDIT_DB = Path(os.getenv("SESA_AUDIT_DB", ROOT / "audit.db"))
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
@@ -78,6 +86,25 @@ def read_status() -> dict[str, Any]:
 def write_status(status: dict[str, Any]) -> None:
     status["updated_at"] = now_iso()
     STATE_FILE.write_text(json.dumps(status, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def drive_overview() -> dict[str, Any]:
+    folders: dict[str, Any] = {}
+    for key, folder_name in DRIVE_FOLDERS.items():
+        folder = DRIVE_ROOT / folder_name
+        if not folder.exists():
+            folders[key] = {"name": folder_name, "exists": False, "files": 0, "directories": 0}
+            continue
+        files = [item for item in folder.rglob("*") if item.is_file()]
+        directories = [item for item in folder.rglob("*") if item.is_dir()]
+        folders[key] = {
+            "name": folder_name,
+            "exists": True,
+            "files": len(files),
+            "directories": len(directories),
+            "last_modified": max((item.stat().st_mtime for item in files), default=None),
+        }
+    return {"root": str(DRIVE_ROOT), "exists": DRIVE_ROOT.exists(), "folders": folders}
 
 
 def init_audit() -> None:
@@ -162,6 +189,13 @@ def health() -> dict[str, str]:
 @app.get("/api/status")
 def status() -> dict[str, Any]:
     return read_status()
+
+
+@app.get("/api/drive/overview", dependencies=[Depends(require_master)])
+def drive_status() -> dict[str, Any]:
+    overview = drive_overview()
+    audit("drive.overview", "master", {"root_exists": overview["exists"]})
+    return overview
 
 
 @app.post("/api/status", dependencies=[Depends(require_master)])
