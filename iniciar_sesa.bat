@@ -6,9 +6,9 @@ REM SESA - Inicializador local do backend
 REM Fase 1 - ambiente de desenvolvimento
 REM ============================================================
 
-cd /d "%~dp0backend"
+cd /d "%~dp006_backend"
 if errorlevel 1 (
-    echo ERRO: a pasta backend nao foi encontrada em %~dp0backend
+    echo ERRO: a pasta 06_backend nao foi encontrada em %~dp006_backend
     pause
     exit /b 1
 )
