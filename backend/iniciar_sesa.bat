@@ -33,18 +33,30 @@ if not defined SESA_MASTER_TOKEN (
 if not defined SESA_SESSION_SECRET set "SESA_SESSION_SECRET=%SESA_MASTER_TOKEN%"
 if not defined SESA_USE_CREWAI set "SESA_USE_CREWAI=false"
 
-REM Usa o Python do ambiente virtual quando ele existir.
-set "PYTHON_CMD=python"
+REM Procura Python nesta ordem: ambiente virtual, python no PATH e py.exe.
+set "PYTHON_CMD="
 if exist ".venv\Scripts\python.exe" set "PYTHON_CMD=.venv\Scripts\python.exe"
 
-where %PYTHON_CMD% >nul 2>&1
-if errorlevel 1 (
+if defined PYTHON_CMD goto python_found
+where python >nul 2>&1
+if not errorlevel 1 set "PYTHON_CMD=python"
+
+if defined PYTHON_CMD goto python_found
+where py >nul 2>&1
+if not errorlevel 1 set "PYTHON_CMD=py -3"
+
+if not defined PYTHON_CMD (
     echo.
     echo ERRO: Python nao foi encontrado.
-    echo Instale o Python 3.11 ou ajuste o comando PYTHON_CMD neste arquivo.
+    echo.
+    echo Instale o Python 3.11 em https://www.python.org/downloads/windows/
+    echo Durante a instalacao, marque a opcao: Add python.exe to PATH.
+    echo Depois, feche e abra novamente o arquivo iniciar_sesa.bat.
     pause
     exit /b 1
 )
+
+:python_found
 
 echo.
 echo Iniciando SESA em http://127.0.0.1:8787
