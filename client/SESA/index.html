@@ -51,8 +51,8 @@
       .eyebrow { margin:0 0 14px; color:var(--accent); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; }
       h1 { margin:0; color:#f5f6f3; font-size:clamp(29px,4.4vw,47px); font-weight:600; letter-spacing:-.065em; line-height:1.06; }
       .lead { max-width:560px; margin:17px auto 0; color:#fff; font-size:13px; line-height:1.7; }
-      .chat { width:min(780px,100%); margin-top:44px; border:1px solid var(--line); border-radius:12px; background:var(--panel); box-shadow:0 24px 80px rgba(0,0,0,.28); }
-      .chat-head { display:flex; align-items:center; justify-content:space-between; padding:15px 17px; border-bottom:1px solid var(--line); }
+      .chat { width:min(780px,100%); margin-top:44px; overflow:hidden; border:1px solid var(--line); border-radius:12px; background:var(--panel); box-shadow:0 24px 80px rgba(0,0,0,.28); }
+      .chat-head { display:flex; align-items:center; justify-content:space-between; padding:15px 17px; border-bottom:1px solid var(--line); border-radius:11px 11px 0 0; }
       .agent { display:flex; align-items:center; gap:10px; }
       .agent-icon { display:block; flex:0 0 auto; width:64px; height:64px; border:1px solid var(--accent); border-radius:50%; object-fit:cover; object-position:center top; background:#181818; box-shadow:0 0 16px rgba(107,214,111,.14); }
       .agent-name { color:#e8ebe8; font-size:12px; font-weight:600; }
@@ -63,11 +63,11 @@
       .message { max-width:600px; padding:15px 16px; border:1px solid var(--accent); border-radius:9px; color:#fff; background:#282d28; font-size:12px; line-height:1.7; text-align:left; }
       .message strong { color:#e5e9e5; font-weight:600; }
       .message-meta { margin-top:9px; color:#68716c; font-family:'DM Mono',monospace; font-size:8px; letter-spacing:.03em; text-transform:uppercase; }
-      .composer { display:flex; align-items:flex-end; gap:10px; padding:12px; border-top:1px solid var(--line); background:#1e1e1e; }
-      textarea { flex:1; min-height:50px; resize:vertical; padding:13px 14px; border:1px solid #303634; border-radius:8px; outline:0; color:#e7ebe7; background:#191919; font-size:12px; line-height:1.5; }
+      .composer { display:flex; align-items:flex-end; gap:10px; padding:12px; border-top:1px solid var(--line); border-radius:0 0 11px 11px; background:#1e1e1e; }
+      textarea { flex:1 1 auto; min-width:0; min-height:50px; resize:vertical; padding:13px 14px; border:1px solid #303634; border-radius:8px; outline:0; color:#e7ebe7; background:#191919; font-size:12px; line-height:1.5; }
       textarea:focus { border-color:#687b42; box-shadow:0 0 0 3px rgba(107,214,111,.07); }
       textarea::placeholder { color:#626a66; }
-      .send { display:grid; place-items:center; width:50px; height:50px; border:1px solid #48542d; border-radius:8px; color:#111; background:var(--accent); cursor:not-allowed; opacity:.42; font-size:18px; }
+      .send { display:grid; flex:0 0 50px; place-items:center; width:50px; height:50px; border:1px solid #48542d; border-radius:8px; color:#111; background:var(--accent); cursor:not-allowed; opacity:.42; font-size:18px; }
       .note { width:min(780px,100%); margin:12px 0 0; color:#555e59; font-family:'DM Mono',monospace; font-size:9px; line-height:1.5; text-align:left; }
       .process-panel { margin:0 20px 16px; padding:13px 14px; border:.5px solid var(--line-soft); border-radius:8px; background:rgba(38,42,38,.82); }
       .process-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:9px; color:#fff; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.04em; text-transform:uppercase; }
