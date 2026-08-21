@@ -331,16 +331,17 @@
 .sidebar-resizer{position:fixed;top:0;bottom:0;left:var(--sesa-sidebar-width,252px);width:7px;z-index:20;cursor:col-resize;background:transparent;touch-action:none}
 .sidebar-resizer::after{content:"";position:absolute;left:3px;top:0;bottom:0;width:1px;background:rgba(255,255,255,.16);transition:background .15s,width .15s}
 .sidebar-resizer:hover::after,.sidebar-resizer:focus::after{left:2px;width:3px;background:rgba(255,255,255,.42)}
-.conversation-thread-panel{display:block;max-height:min(42vh,420px);overflow:hidden}
+.conversation-thread-panel{display:flex;flex:1 1 auto;min-height:180px;max-height:none;overflow:hidden;flex-direction:column}
 .conversation-thread-panel[hidden]{display:none}
-.conversation-thread-list{max-height:min(34vh,340px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.32) transparent;padding-right:3px}
+.conversation-thread-list{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.32) transparent;padding:0 3px 0 0}
 .conversation-thread-list::-webkit-scrollbar{width:4px}
 .conversation-thread-list::-webkit-scrollbar-track{background:transparent}
 .conversation-thread-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.28);border-radius:99px}
-.sidebar-settings-bottom{margin-top:auto;padding:10px 0 0}
-.sidebar-settings-bottom a{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid transparent;border-radius:10px;color:var(--text);text-decoration:none}
+.sidebar-settings-bottom{margin-top:0;padding:12px 0 0;border-top:1px solid rgba(255,255,255,.16)}
+.sidebar-settings-bottom a{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid transparent;border-radius:10px;color:var(--text);text-decoration:none}
 .sidebar-settings-bottom a:hover{background:rgba(255,255,255,.05);border-color:var(--line)}
-@media (max-width:720px){.sidebar-resizer{display:none}.sidebar,.main{width:100%!important;margin-left:0!important}.conversation-thread-list{max-height:280px}}
+.sidebar-settings-bottom a + a{margin-top:2px}
+@media (max-width:720px){.sidebar-resizer{display:none}.sidebar,.main{width:100%!important;margin-left:0!important}.conversation-thread-panel{min-height:280px}.conversation-thread-list{max-height:none}}
 </style>
 </head>
   <body class="landing-mode">
@@ -420,8 +421,7 @@ Error generating stack: `+l.message+`
         <nav class="nav" aria-label="Navegação do SESA">
 
         </nav><section class="conversation-thread-panel" id="conversation-thread-panel" data-conversation-panel><div class="conversation-thread-head"><span>Conversas anteriores</span><button type="button" class="conversation-thread-new" data-conversation-new>Nova</button></div><div class="conversation-thread-list" id="conversation-thread-list"><div class="conversation-thread-empty">Nenhuma conversa salva.</div></div></section>
-        <div class="internal-note"><span class="nav-icon">◇</span><span>O SESA coordena internamente as áreas Jurídica, Dados, Estatística e Relatórios.</span></div>
-        <div class="sidebar-settings-bottom"><a href="#configuracoes" id="developer-settings-link" data-developer-only hidden><span class="nav-icon">⚙</span> Configurações</a></div>
+        <div class="sidebar-settings-bottom"><a href="#etapas" data-view="stages"><span class="nav-icon">◌</span> WorkFlow</a><a href="#configuracoes" id="developer-settings-link" data-developer-only hidden><span class="nav-icon">⚙</span> Configurações</a></div>
         <div class="sidebar-bottom"><div class="connection"><span class="dot"></span> SESA disponível</div><p class="sidebar-note">Estou aqui para receber sua solicitação e orientar o próximo passo.</p><div class="user-identity" id="user-identity"><span class="user-avatar" id="user-avatar">—</span><div><div class="user-name" id="user-name">Não autenticado</div><div class="user-role" id="user-role">login necessário</div></div></div></div>
       </aside>
       <div class="sidebar-resizer" id="sidebar-resizer" role="separator" aria-label="Redimensionar menu lateral" tabindex="0"></div>
