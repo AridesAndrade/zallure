@@ -34,6 +34,7 @@ PERMISSION_CATALOG = {
     "sensivel_financeiro": "Conteúdo sensível Financeiro",
     "sensivel_saude": "Conteúdo sensível da Saúde",
     "sensivel_pessoal": "Dados pessoais sensíveis",
+    "sensivel_setor": "Assuntos sensíveis de setor autorizado",
 }
 
 DEFAULT_PERMISSIONS = {key: False for key in PERMISSION_CATALOG}
@@ -61,7 +62,7 @@ def _decode_permissions(value: str | None, role: str) -> dict[str, bool]:
     except (TypeError, ValueError):
         stored = {}
     defaults = _permissions_for_role(role)
-    result = {key: bool(stored.get(key, defaults[key])) for key in PERMISSION_CATALOG}
+    result = {key: bool(stored.get(key, defaults.get(key, False))) for key in PERMISSION_CATALOG}
     # Acesso Master é uma autorização especial: nunca pode ser concedida
     # a uma função não-Master e sempre acompanha a função Master.
     result["acesso_master"] = role == "Master"
