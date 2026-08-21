@@ -910,6 +910,13 @@ def conversation_actor(authorization: str | None) -> dict[str, Any]:
     return {"username": "gestor", "display_name": "SESA"}
 
 
+def enforce_conversation_agent_access(actor: dict[str, Any], agent_key: str) -> None:
+    if agent_key == "gestor":
+        return
+    if actor.get("role") != "Master":
+        raise HTTPException(status_code=403, detail="Somente usuários Master podem conversar com agentes especialistas")
+
+
 def conversation_item(row: sqlite3.Row) -> dict[str, Any]:
     item = dict(row)
     item["sensitive"] = bool(item["sensitive"])
@@ -1108,10 +1115,13 @@ def update_orchestration_configuration(request: OrchestrationConfigRequest, auth
 
 @app.get("/api/conversations")
 def list_conversations(authorization: str | None = Header(default=None), agent_key: str | None = None) -> dict[str, Any]:
-    owner = conversation_actor(authorization)["username"]
+    actor = conversation_actor(authorization)
+    owner = actor["username"]
     query = "SELECT id, owner_username, agent_key, title, sensitive, created_at, updated_at, active FROM conversations WHERE owner_username = ? AND active = 1"
     params: list[Any] = [owner]
-    if agent_key:
+    if actor.get("role") != "Master":
+        query += " AND agent_key = 'gestor'"
+    elif agent_key:
         query += " AND agent_key = ?"
         params.append(agent_key)
     query += " ORDER BY updated_at DESC"
@@ -1123,7 +1133,9 @@ def list_conversations(authorization: str | None = Header(default=None), agent_k
 
 @app.post("/api/conversations")
 def create_conversation(request: ConversationCreateRequest, authorization: str | None = Header(default=None)) -> dict[str, Any]:
-    owner = conversation_actor(authorization)["username"]
+    actor = conversation_actor(authorization)
+    owner = actor["username"]
+    enforce_conversation_agent_access(actor, request.agent_key)
     if not get_agent_config(request.agent_key):
         raise HTTPException(status_code=404, detail="Agente não encontrado")
     conversation_id = hashlib.sha256(f"{owner}:{request.agent_key}:{time.time_ns()}".encode()).hexdigest()[:28]
@@ -1136,8 +1148,11 @@ def create_conversation(request: ConversationCreateRequest, authorization: str |
 
 @app.get("/api/conversations/{conversation_id}")
 def read_conversation(conversation_id: str, authorization: str | None = Header(default=None)) -> dict[str, Any]:
-    owner = conversation_actor(authorization)["username"]
+    actor = conversation_actor(authorization)
+    owner = actor["username"]
     item = get_conversation(conversation_id, owner)
+    if item:
+        enforce_conversation_agent_access(actor, item["agent_key"])
     if not item:
         raise HTTPException(status_code=404, detail="Conversa não encontrada ou sem autorização")
     return {"conversation": item}
@@ -1150,6 +1165,7 @@ def add_conversation_message(conversation_id: str, request: ConversationMessageR
     item = get_conversation(conversation_id, owner)
     if not item:
         raise HTTPException(status_code=404, detail="Conversa não encontrada ou sem autorização")
+    enforce_conversation_agent_access(actor, item["agent_key"])
     sensitive = bool(request.sensitive or item["sensitive"])
     with sqlite3.connect(CONVERSATIONS_DB) as conn:
         conn.execute("INSERT INTO conversation_messages(conversation_id, role, author, content, sensitive, events_json, created_at) VALUES (?, 'user', ?, ?, ?, '[]', ?)", (conversation_id, owner, request.message, int(sensitive), now_iso()))
@@ -1166,8 +1182,12 @@ def add_conversation_message(conversation_id: str, request: ConversationMessageR
 
 @app.patch("/api/conversations/{conversation_id}")
 def rename_conversation(conversation_id: str, request: ConversationCreateRequest, authorization: str | None = Header(default=None)) -> dict[str, Any]:
-    owner = conversation_actor(authorization)["username"]
-    if not get_conversation(conversation_id, owner, False):
+    actor = conversation_actor(authorization)
+    owner = actor["username"]
+    current = get_conversation(conversation_id, owner, False)
+    if current:
+        enforce_conversation_agent_access(actor, current["agent_key"])
+    if not current:
         raise HTTPException(status_code=404, detail="Conversa não encontrada")
     with sqlite3.connect(CONVERSATIONS_DB) as conn:
         conn.execute("UPDATE conversations SET title = ?, updated_at = ? WHERE id = ? AND owner_username = ?", (request.title.strip(), now_iso(), conversation_id, owner))
@@ -1176,8 +1196,12 @@ def rename_conversation(conversation_id: str, request: ConversationCreateRequest
 
 @app.delete("/api/conversations/{conversation_id}")
 def archive_conversation(conversation_id: str, authorization: str | None = Header(default=None)) -> dict[str, Any]:
-    owner = conversation_actor(authorization)["username"]
-    if not get_conversation(conversation_id, owner, False):
+    actor = conversation_actor(authorization)
+    owner = actor["username"]
+    current = get_conversation(conversation_id, owner, False)
+    if current:
+        enforce_conversation_agent_access(actor, current["agent_key"])
+    if not current:
         raise HTTPException(status_code=404, detail="Conversa não encontrada")
     with sqlite3.connect(CONVERSATIONS_DB) as conn:
         conn.execute("UPDATE conversations SET active = 0, updated_at = ? WHERE id = ? AND owner_username = ?", (now_iso(), conversation_id, owner))
