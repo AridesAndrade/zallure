@@ -6,6 +6,7 @@ import json
 import os
 import re
 import sqlite3
+import time
 import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
@@ -57,6 +58,7 @@ DRIVE_FOLDERS = {
 STATE_FILE = Path(os.getenv("SESA_STATUS_FILE", ROOT / "status.json"))
 AUDIT_DB = Path(os.getenv("SESA_AUDIT_DB", ROOT / "audit.db"))
 SENSITIVE_DB = Path(os.getenv("SESA_SENSITIVE_DB", ROOT / "sensitive_subjects.db"))
+CONVERSATIONS_DB = Path(os.getenv("SESA_CONVERSATIONS_DB", ROOT / "conversations.db"))
 AGENT_CONFIG_FILE = Path(os.getenv("SESA_AGENT_CONFIG_FILE", ROOT / "agent_prompts.json"))
 AGENT_PROPOSALS_FILE = Path(os.getenv("SESA_AGENT_PROPOSALS_FILE", ROOT / "agent_config_proposals.json"))
 ORCHESTRATION_CONFIG_FILE = Path(os.getenv("SESA_ORCHESTRATION_CONFIG_FILE", ROOT / "orchestration_config.json"))
@@ -349,6 +351,17 @@ class AgentCreateRequest(BaseModel):
 
 class AgentConversationRequest(BaseModel):
     message: str = Field(min_length=1, max_length=12000)
+
+
+class ConversationCreateRequest(BaseModel):
+    agent_key: str = Field(default="gestor", min_length=2, max_length=80, pattern=r"^[a-z0-9_]+$")
+    title: str = Field(default="Nova conversa", min_length=1, max_length=180)
+    sensitive: bool = False
+
+
+class ConversationMessageRequest(BaseModel):
+    message: str = Field(min_length=1, max_length=12000)
+    sensitive: bool = False
 
 
 class AgentProposalApplyRequest(BaseModel):
@@ -880,6 +893,48 @@ def startup() -> None:
     init_users()
 
 
+def init_conversations_db() -> None:
+    CONVERSATIONS_DB.parent.mkdir(parents=True, exist_ok=True)
+    with sqlite3.connect(CONVERSATIONS_DB) as conn:
+        conn.execute("CREATE TABLE IF NOT EXISTS conversations (id TEXT PRIMARY KEY, owner_username TEXT NOT NULL, agent_key TEXT NOT NULL, title TEXT NOT NULL, sensitive INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL, updated_at TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 1)")
+        conn.execute("CREATE TABLE IF NOT EXISTS conversation_messages (id INTEGER PRIMARY KEY AUTOINCREMENT, conversation_id TEXT NOT NULL, role TEXT NOT NULL, author TEXT NOT NULL, content TEXT NOT NULL, sensitive INTEGER NOT NULL DEFAULT 0, events_json TEXT NOT NULL DEFAULT '[]', created_at TEXT NOT NULL)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_conversations_owner_updated ON conversations(owner_username, updated_at DESC)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_conversation_messages_thread ON conversation_messages(conversation_id, id)")
+
+
+def conversation_actor(authorization: str | None) -> dict[str, Any]:
+    if authorization and authorization.startswith("Bearer "):
+        session = verify_session(authorization.removeprefix("Bearer ").strip())
+        if session:
+            return {**session, **(get_user_profile(session["username"]) or {})}
+    return {"username": "gestor", "display_name": "SESA"}
+
+
+def conversation_item(row: sqlite3.Row) -> dict[str, Any]:
+    item = dict(row)
+    item["sensitive"] = bool(item["sensitive"])
+    item["active"] = bool(item["active"])
+    item.pop("owner_username", None)
+    return item
+
+
+def get_conversation(conversation_id: str, owner: str, include_messages: bool = True) -> dict[str, Any] | None:
+    init_conversations_db()
+    with sqlite3.connect(CONVERSATIONS_DB) as conn:
+        conn.row_factory = sqlite3.Row
+        row = conn.execute("SELECT id, owner_username, agent_key, title, sensitive, created_at, updated_at, active FROM conversations WHERE id = ? AND owner_username = ? AND active = 1", (conversation_id, owner)).fetchone()
+        if not row:
+            return None
+        item = conversation_item(row)
+        if include_messages:
+            messages = conn.execute("SELECT id, role, author, content, sensitive, events_json, created_at FROM conversation_messages WHERE conversation_id = ? ORDER BY id", (conversation_id,)).fetchall()
+            item["messages"] = [{"id": m[0], "role": m[1], "author": m[2], "content": m[3], "sensitive": bool(m[4]), "events": json.loads(m[5] or "[]"), "created_at": m[6]} for m in messages]
+        return item
+
+
+init_conversations_db()
+
+
 @app.get("/api/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "service": "sesa-agente-gestor"}
@@ -1049,6 +1104,85 @@ def update_orchestration_configuration(request: OrchestrationConfigRequest, auth
         raise HTTPException(status_code=400, detail=f"Campos de orquestração desconhecidos: {', '.join(sorted(unknown))}")
     saved = save_orchestration_config(request.config, actor)
     return {"orchestration": saved}
+
+
+@app.get("/api/conversations")
+def list_conversations(authorization: str | None = Header(default=None), agent_key: str | None = None) -> dict[str, Any]:
+    owner = conversation_actor(authorization)["username"]
+    query = "SELECT id, owner_username, agent_key, title, sensitive, created_at, updated_at, active FROM conversations WHERE owner_username = ? AND active = 1"
+    params: list[Any] = [owner]
+    if agent_key:
+        query += " AND agent_key = ?"
+        params.append(agent_key)
+    query += " ORDER BY updated_at DESC"
+    with sqlite3.connect(CONVERSATIONS_DB) as conn:
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute(query, params).fetchall()
+    return {"conversations": [conversation_item(row) for row in rows]}
+
+
+@app.post("/api/conversations")
+def create_conversation(request: ConversationCreateRequest, authorization: str | None = Header(default=None)) -> dict[str, Any]:
+    owner = conversation_actor(authorization)["username"]
+    if not get_agent_config(request.agent_key):
+        raise HTTPException(status_code=404, detail="Agente não encontrado")
+    conversation_id = hashlib.sha256(f"{owner}:{request.agent_key}:{time.time_ns()}".encode()).hexdigest()[:28]
+    now = now_iso()
+    with sqlite3.connect(CONVERSATIONS_DB) as conn:
+        conn.execute("INSERT INTO conversations(id, owner_username, agent_key, title, sensitive, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)", (conversation_id, owner, request.agent_key, request.title.strip(), int(request.sensitive), now, now))
+    audit("conversation.create", owner, {"conversation_id": conversation_id, "agent_key": request.agent_key})
+    return {"conversation": get_conversation(conversation_id, owner)}
+
+
+@app.get("/api/conversations/{conversation_id}")
+def read_conversation(conversation_id: str, authorization: str | None = Header(default=None)) -> dict[str, Any]:
+    owner = conversation_actor(authorization)["username"]
+    item = get_conversation(conversation_id, owner)
+    if not item:
+        raise HTTPException(status_code=404, detail="Conversa não encontrada ou sem autorização")
+    return {"conversation": item}
+
+
+@app.post("/api/conversations/{conversation_id}/messages")
+def add_conversation_message(conversation_id: str, request: ConversationMessageRequest, authorization: str | None = Header(default=None)) -> dict[str, Any]:
+    actor = conversation_actor(authorization)
+    owner = actor["username"]
+    item = get_conversation(conversation_id, owner)
+    if not item:
+        raise HTTPException(status_code=404, detail="Conversa não encontrada ou sem autorização")
+    sensitive = bool(request.sensitive or item["sensitive"])
+    with sqlite3.connect(CONVERSATIONS_DB) as conn:
+        conn.execute("INSERT INTO conversation_messages(conversation_id, role, author, content, sensitive, events_json, created_at) VALUES (?, 'user', ?, ?, ?, '[]', ?)", (conversation_id, owner, request.message, int(sensitive), now_iso()))
+        conn.execute("UPDATE conversations SET updated_at = ?, sensitive = ? WHERE id = ?", (now_iso(), int(sensitive), conversation_id))
+    result = live_agent_response(item["agent_key"], request.message, actor)
+    answer = result.get("answer") or "O agente não retornou uma resposta."
+    events = result.get("events", [])
+    with sqlite3.connect(CONVERSATIONS_DB) as conn:
+        conn.execute("INSERT INTO conversation_messages(conversation_id, role, author, content, sensitive, events_json, created_at) VALUES (?, 'assistant', ?, ?, ?, ?, ?)", (conversation_id, item["agent_key"], answer, int(sensitive), json.dumps(events, ensure_ascii=False), now_iso()))
+        conn.execute("UPDATE conversations SET updated_at = ? WHERE id = ?", (now_iso(), conversation_id))
+    agent = get_agent_config(item["agent_key"]) or {}
+    return {"conversation_id": conversation_id, "agent_key": item["agent_key"], "agent_name": agent.get("name", item["agent_key"]), "answer": answer, "events": events, "sensitive": sensitive}
+
+
+@app.patch("/api/conversations/{conversation_id}")
+def rename_conversation(conversation_id: str, request: ConversationCreateRequest, authorization: str | None = Header(default=None)) -> dict[str, Any]:
+    owner = conversation_actor(authorization)["username"]
+    if not get_conversation(conversation_id, owner, False):
+        raise HTTPException(status_code=404, detail="Conversa não encontrada")
+    with sqlite3.connect(CONVERSATIONS_DB) as conn:
+        conn.execute("UPDATE conversations SET title = ?, updated_at = ? WHERE id = ? AND owner_username = ?", (request.title.strip(), now_iso(), conversation_id, owner))
+    return {"conversation": get_conversation(conversation_id, owner)}
+
+
+@app.delete("/api/conversations/{conversation_id}")
+def archive_conversation(conversation_id: str, authorization: str | None = Header(default=None)) -> dict[str, Any]:
+    owner = conversation_actor(authorization)["username"]
+    if not get_conversation(conversation_id, owner, False):
+        raise HTTPException(status_code=404, detail="Conversa não encontrada")
+    with sqlite3.connect(CONVERSATIONS_DB) as conn:
+        conn.execute("UPDATE conversations SET active = 0, updated_at = ? WHERE id = ? AND owner_username = ?", (now_iso(), conversation_id, owner))
+    audit("conversation.archive", owner, {"conversation_id": conversation_id})
+    return {"ok": True}
 
 
 @app.get("/api/agent-config", dependencies=[Depends(require_master)])
