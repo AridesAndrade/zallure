@@ -1370,8 +1370,9 @@ def list_agent_proposals(status: str | None = None) -> dict[str, Any]:
     return {"proposals": items}
 
 
-def live_agent_response(agent_key: str, message: str, actor: str) -> dict[str, Any]:
+def live_agent_response(agent_key: str, message: str, actor: dict[str, Any] | str) -> dict[str, Any]:
     agent = get_agent_config(agent_key)
+    actor_context = actor if isinstance(actor, dict) else (get_user_profile(actor) or {"username": actor, "display_name": actor, "role": "Master", "sector": "Secretaria de Saúde", "institutional_function": "Gestão e desenvolvimento do SESA", "permissions": {}})
     if agent_key not in load_agent_configs():
         raise HTTPException(status_code=404, detail="Agente não encontrado")
     api_key = os.getenv("GROQ_API_KEY")
@@ -1394,7 +1395,7 @@ def live_agent_response(agent_key: str, message: str, actor: str) -> dict[str, A
         "Nenhuma alteração permanente de parametrização deve ser feita nesta conversa sem aprovação explícita do Master.\\n\\n"
         + build_configured_agent_context(agent_key)
         + "\\n\\n"
-        + build_user_context({"username": actor, "display_name": actor, "role": "Master", "sector": "Secretaria de Saúde", "institutional_function": "Gestão e desenvolvimento do SESA", "permissions": {}})
+        + build_user_context(actor_context)
     )
     payload = {
         "model": agent.get("model") or os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
