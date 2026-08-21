@@ -32,6 +32,8 @@ from auth import (
     set_user_environment,
     set_user_password,
     set_user_role,
+    set_user_profile,
+    PERMISSION_CATALOG,
     verify_session,
 )
 
@@ -138,6 +140,14 @@ class UserEnvironmentRequest(BaseModel):
 
 class UserRoleRequest(BaseModel):
     role: str = Field(min_length=2, max_length=40)
+
+
+class UserProfileRequest(BaseModel):
+    username: str = Field(min_length=3, max_length=80, pattern=r"^[a-zA-Z0-9_.-]+$")
+    display_name: str = Field(min_length=1, max_length=120)
+    role: str = Field(min_length=2, max_length=40)
+    sector: str = Field(min_length=1, max_length=120)
+    permissions: dict[str, bool] = Field(default_factory=dict)
 
 
 class UserPasswordRequest(BaseModel):
@@ -379,6 +389,26 @@ def change_user_status(username: str, request: UserStatusRequest) -> dict[str, b
         raise HTTPException(status_code=404, detail="Usuário não encontrado") from None
     audit("user.status.update", "master", {"username": username, "active": request.active})
     return {"updated": True}
+
+
+@app.patch("/api/users/{username}/profile", dependencies=[Depends(require_master)])
+def change_user_profile(username: str, request: UserProfileRequest) -> dict[str, Any]:
+    allowed_roles = {"Master", "Gestor", "Secretaria", "Auditor", "Dados", "Estatístico", "Relatórios"}
+    if request.role not in allowed_roles:
+        raise HTTPException(status_code=400, detail="Perfil institucional não permitido")
+    unknown = set(request.permissions) - set(PERMISSION_CATALOG)
+    if unknown:
+        raise HTTPException(status_code=400, detail=f"Permissões desconhecidas: {', '.join(sorted(unknown))}")
+    try:
+        profile = set_user_profile(username, request.role, request.permissions, request.username, request.display_name, request.sector)
+    except sqlite3.IntegrityError:
+        raise HTTPException(status_code=409, detail="Nome de usuário já existe") from None
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from None
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado") from None
+    audit("user.profile.update", "master", {"username": username, "new_username": request.username, "role": request.role, "sector": request.sector, "permissions": request.permissions})
+    return {"updated": True, **profile}
 
 
 @app.patch("/api/users/{username}/role", dependencies=[Depends(require_master)])
