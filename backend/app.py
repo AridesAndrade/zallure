@@ -17,6 +17,7 @@ from dotenv import load_dotenv
 import requests
 from fastapi import Depends, FastAPI, Header, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 # Carrega a configuração local antes de importar a autenticação.
@@ -271,6 +272,13 @@ def save_agent_config(agent_key: str, values: dict[str, Any], updated_by: str) -
     return configs[agent_key]
 
 app = FastAPI(title="SESA — Agente Gestor", version="0.1.0")
+
+# Quando o backend é executado localmente, ele também serve a interface do SESA.
+# Isso mantém frontend e API na mesma origem e evita bloqueio de mixed content.
+FRONTEND_ROOT = ROOT.parent / "SESA"
+if FRONTEND_ROOT.exists():
+    app.mount("/SESA", StaticFiles(directory=FRONTEND_ROOT, html=True), name="sesa-ui")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[origin.strip() for origin in os.getenv("SESA_ALLOWED_ORIGINS", "*").split(",")],
