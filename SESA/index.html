@@ -313,6 +313,12 @@
 .master-meeting-banner{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 14px;padding:11px 13px;border:1px solid #777;border-radius:8px;background:#252525;color:#ddd;font-size:10px;line-height:1.45}.master-meeting-banner strong{display:block;color:#fff;font-size:11px}.master-meeting-banner small{display:block;margin-top:3px;color:#a4a4a4;font-family:'DM Mono',monospace;font-size:8px}.master-meeting-end{flex:0 0 auto;padding:7px 10px;border:1px solid #888;border-radius:6px;background:#1a1a1a;color:#eee;cursor:pointer;font-family:'DM Mono',monospace;font-size:8px}.master-meeting-end:hover{background:#363636;border-color:#eee}.master-proposal-row{display:grid;gap:8px;margin:10px 0;padding:11px;border:1px solid #777;border-radius:8px;background:#222;color:#ddd}.master-proposal-row strong{color:#fff;font-size:11px}.master-proposal-row small{color:#aaa;font-size:9px;line-height:1.45}.master-proposal-row pre{margin:0;padding:8px;max-height:220px;overflow:auto;border:1px solid #444;border-radius:5px;background:#151515;color:#cfcfcf;font:8px/1.45 'DM Mono',monospace;white-space:pre-wrap}.master-proposal-row button{justify-self:start;padding:7px 10px;border:1px solid #aaa;border-radius:6px;background:#ddd;color:#1d1d1d;cursor:pointer;font-size:9px}.master-proposal-row button:hover{background:#fff}
 </style>
 <style id="sesa-composer-cleanup-styles">
+
+      .agent-picker-overlay{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.72);backdrop-filter:blur(4px)}
+      .agent-picker-card{width:min(620px,100%);max-height:90vh;overflow:auto;padding:26px;border:1px solid #555;border-radius:14px;background:#181818;box-shadow:0 18px 60px rgba(0,0,0,.55);color:#f2f2f2}
+      .agent-picker-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;border-bottom:1px solid #444;padding-bottom:18px;margin-bottom:20px}.agent-picker-head h2{margin:6px 0 5px;font-size:22px;font-weight:500}.agent-picker-head p{margin:0;color:#aaa;font-size:13px}.agent-picker-close{border:0;background:transparent;color:#aaa;font-size:27px;line-height:1;cursor:pointer}.agent-picker-close:hover{color:#fff}
+      .agent-picker-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.agent-picker-option{min-height:68px;padding:13px 15px;border:1px solid #4b4b4b;border-radius:9px;background:#202020;color:#eee;text-align:left;cursor:pointer;transition:border-color .15s,background .15s}.agent-picker-option:hover{border-color:#aaa;background:#292929}.agent-picker-option.selected{border-color:#f2f2f2;background:#343434;box-shadow:inset 0 0 0 1px #f2f2f2}.agent-picker-option strong,.agent-picker-option small{display:block}.agent-picker-option small{margin-top:5px;color:#999;font-family:'DM Mono',monospace;font-size:10px}.agent-picker-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid #444}.agent-picker-actions button{min-height:38px;padding:0 16px;border:1px solid #555;border-radius:7px;background:#242424;color:#eee;cursor:pointer}.agent-picker-actions button:hover{background:#303030}.agent-picker-actions .agent-picker-confirm{border-color:#eee;background:#eee;color:#111}.agent-picker-actions .agent-picker-confirm:disabled{border-color:#444;background:#2a2a2a;color:#777;cursor:not-allowed}
+      @media (max-width:560px){.agent-picker-grid{grid-template-columns:1fr}.agent-picker-card{padding:20px}}
 .sensitive-topic-control{display:inline-flex;align-items:center;justify-content:center;gap:5px;flex:0 0 auto;width:34px;height:30px;margin:0 4px 0 2px;border:0;border-radius:7px;color:#bdbdbd;background:transparent;cursor:pointer}.sensitive-topic-control:hover{color:#fff;background:#303030}.sensitive-topic-control input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.sensitive-lock-icon{position:relative;display:block;width:11px;height:9px;margin-top:4px;border:1px solid currentColor;border-radius:2px}.sensitive-lock-icon::before{content:"";position:absolute;left:2px;top:-7px;width:5px;height:7px;border:1px solid currentColor;border-bottom:0;border-radius:5px 5px 0 0}.sensitive-check{display:none;font-size:12px;line-height:1;color:#e8e8e8}.sensitive-topic-control:has(input:checked){color:#fff;background:#383838}.sensitive-topic-control:has(input:checked) .sensitive-check{display:block}.sensitive-topic-control:has(input:focus-visible){outline:1px solid #aaa;outline-offset:2px}.composer-mode,.voice{display:none!important}.dev-panel-section.full .dev-field.effective-prompt-field{margin-top:14px;padding:12px;border:1px solid #555;border-radius:8px;background:#1b1b1b}.effective-prompt-field label{color:#f0f0f0;font-weight:600}.effective-prompt-field textarea{min-height:150px;border-color:#777;background:#151515}
 </style>
 </head>
@@ -459,18 +465,22 @@ Error generating stack: `+l.message+`
           const masterMeeting = { active: false, agentKey: null, pending: 0 };
           const getConfiguredAgentName = (key) => readDevConfig()?.agents?.[key]?.name || key || 'agente';
           const chooseMasterMeetingAgent = () => {
-            const meetingConfig = readDevConfig(); const agents = Object.entries(meetingConfig?.agents || {});
+            const meetingConfig = readDevConfig();
+            const agents = Object.entries(meetingConfig?.agents || {});
             const fallback = [['gestor', 'Agente Gestor'], ['juridico', 'Agente Jurídico'], ['dados', 'Agente Dados'], ['estatistico', 'Agente Estatístico'], ['relatorios', 'Agente Relatórios'], ['financeiro', 'Agente Financeiro'], ['servidor_publico', 'Agente Servidor Público']];
             const options = agents.length ? agents.map(([key, item]) => [key, item?.name || key]) : fallback;
-            const listing = options.map(([key, name], index) => `${index + 1}. ${name} (${key})`).join('\n');
-            const answer = window.prompt(`Escolha o agente para a reunião de RH. Digite o número ou a chave técnica:\n\n${listing}`, 'dados');
-            if (answer === null) return null;
-            const normalized = answer.trim().toLowerCase();
-            const byIndex = Number(normalized);
-            const selected = Number.isInteger(byIndex) && byIndex >= 1 && byIndex <= options.length ? options[byIndex - 1][0] : options.find(([key]) => key.toLowerCase() === normalized)?.[0];
-            if (!selected) { window.alert('Agente não reconhecido. Escolha uma opção da lista, como 3 ou dados.'); return null; }
-            window.sesaSelectedAgent = selected;
-            return selected;
+            return new Promise((resolve) => {
+              let selected = window.sesaSelectedAgent || null;
+              const overlay = document.createElement('div'); overlay.className = 'agent-picker-overlay'; overlay.setAttribute('role', 'dialog'); overlay.setAttribute('aria-modal', 'true');
+              overlay.innerHTML = `<div class="agent-picker-card"><div class="agent-picker-head"><div><span class="eyebrow">REUNIÃO MASTER</span><h2>Escolha o agente</h2><p>Selecione o agente que participará da conversa.</p></div><button type="button" class="agent-picker-close" aria-label="Cancelar">×</button></div><div class="agent-picker-grid">${options.map(([key, name]) => `<button type="button" class="agent-picker-option${key === selected ? ' selected' : ''}" data-agent-picker-key="${escapeHtml(key)}"><strong>${escapeHtml(name)}</strong><small>${escapeHtml(key)}</small></button>`).join('')}</div><div class="agent-picker-actions"><button type="button" class="agent-picker-cancel">Cancelar</button><button type="button" class="primary agent-picker-confirm" disabled>Conversar com o agente</button></div></div>`;
+              document.body.appendChild(overlay);
+              const confirm = overlay.querySelector('.agent-picker-confirm');
+              const close = (value = null) => { overlay.remove(); resolve(value); };
+              overlay.querySelectorAll('[data-agent-picker-key]').forEach((button) => button.addEventListener('click', () => { overlay.querySelectorAll('[data-agent-picker-key]').forEach((item) => item.classList.remove('selected')); button.classList.add('selected'); selected = button.dataset.agentPickerKey; if (confirm) confirm.disabled = false; }));
+              overlay.querySelector('.agent-picker-close')?.addEventListener('click', () => close());
+              overlay.querySelector('.agent-picker-cancel')?.addEventListener('click', () => close());
+              confirm?.addEventListener('click', () => { if (!selected) return; window.sesaSelectedAgent = selected; close(selected); });
+            });
           };
           const enterMasterMeeting = (agentKey = 'gestor') => {
             const token = sessionStorage.getItem('sesa_master_token');
