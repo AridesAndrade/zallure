@@ -16,6 +16,7 @@ PASSWORD_ITERATIONS = 240_000
 SESSION_HOURS = 8
 
 PERMISSION_CATALOG = {
+    "acesso_master": "Acesso Master",
     "internet": "Usar internet a serviço do usuário",
     "normas": "Consultar normas e legislação aprovadas",
     "financeiro": "Solicitar e receber dados financeiros",
@@ -53,7 +54,11 @@ def _decode_permissions(value: str | None, role: str) -> dict[str, bool]:
     except (TypeError, ValueError):
         stored = {}
     defaults = _permissions_for_role(role)
-    return {key: bool(stored.get(key, defaults[key])) for key in PERMISSION_CATALOG}
+    result = {key: bool(stored.get(key, defaults[key])) for key in PERMISSION_CATALOG}
+    # Acesso Master é uma autorização especial: nunca pode ser concedida
+    # a uma função não-Master e sempre acompanha a função Master.
+    result["acesso_master"] = role == "Master"
+    return result
 
 DEFAULT_USERS = (
     ("master_01", "Master", "developer"),
@@ -95,6 +100,7 @@ def init_users(default_password: str = "123456") -> None:
                 permissions TEXT NOT NULL DEFAULT '{}',
                 display_name TEXT NOT NULL DEFAULT '',
                 sector TEXT NOT NULL DEFAULT '',
+                institutional_function TEXT NOT NULL DEFAULT '',
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             )"""
         )
@@ -107,6 +113,8 @@ def init_users(default_password: str = "123456") -> None:
             conn.execute("ALTER TABLE users ADD COLUMN display_name TEXT NOT NULL DEFAULT ''")
         if "sector" not in columns:
             conn.execute("ALTER TABLE users ADD COLUMN sector TEXT NOT NULL DEFAULT ''")
+        if "institutional_function" not in columns:
+            conn.execute("ALTER TABLE users ADD COLUMN institutional_function TEXT NOT NULL DEFAULT ''")
         for username, role, environment in DEFAULT_USERS:
             salt = secrets.token_bytes(16)
             conn.execute(
@@ -116,6 +124,7 @@ def init_users(default_password: str = "123456") -> None:
         conn.execute("UPDATE users SET environment = 'developer' WHERE role = 'Master'")
         conn.execute("UPDATE users SET display_name = username WHERE display_name IS NULL OR display_name = ''")
         conn.execute("UPDATE users SET sector = 'Secretaria de Saúde' WHERE sector IS NULL OR sector = ''")
+        conn.execute("UPDATE users SET institutional_function = 'Não informado' WHERE institutional_function IS NULL OR institutional_function = ''")
         for username, role, _environment in DEFAULT_USERS:
             conn.execute("UPDATE users SET permissions = ? WHERE username = ? AND (permissions IS NULL OR permissions = '{}' OR permissions = '')", (json.dumps(_permissions_for_role(role), ensure_ascii=False), username))
 
@@ -123,7 +132,7 @@ def init_users(default_password: str = "123456") -> None:
 def authenticate_user(username: str, password: str) -> dict[str, Any] | None:
     with _connection() as conn:
         row = conn.execute(
-            "SELECT username, role, environment, salt, password_hash, active, permissions FROM users WHERE username = ?",
+            "SELECT username, role, environment, salt, password_hash, active, permissions, institutional_function, display_name, sector FROM users WHERE username = ?",
             (username.strip().lower(),),
         ).fetchone()
     if not row or not row[5]:
@@ -132,7 +141,7 @@ def authenticate_user(username: str, password: str) -> dict[str, Any] | None:
     valid = hmac.compare_digest(_hash_password(password, salt), row[4])
     if not valid:
         return None
-    return {"username": row[0], "role": row[1], "environment": row[2], "permissions": _decode_permissions(row[6] if len(row) > 6 else None, row[1])}
+    return {"username": row[0], "role": row[1], "environment": row[2], "permissions": _decode_permissions(row[6] if len(row) > 6 else None, row[1]), "institutional_function": row[7] or 'Não informado', "display_name": row[8] or row[0], "sector": row[9] or 'Secretaria de Saúde'}
 
 
 def issue_session(user: dict[str, Any]) -> str:
@@ -249,13 +258,35 @@ def delete_user(username: str) -> None:
         conn.execute("DELETE FROM users WHERE username = ?", (username.strip().lower(),))
 
 
+def get_user_profile(username: str) -> dict[str, Any] | None:
+    username = username.strip().lower()
+    with _connection() as conn:
+        row = conn.execute(
+            "SELECT username, role, environment, active, created_at, permissions, display_name, sector, institutional_function FROM users WHERE username = ?",
+            (username,),
+        ).fetchone()
+    if not row:
+        return None
+    return {
+        "username": row[0],
+        "role": row[1],
+        "environment": row[2],
+        "active": bool(row[3]),
+        "created_at": row[4],
+        "permissions": _decode_permissions(row[5], row[1]),
+        "display_name": row[6] or row[0],
+        "sector": row[7] or "Secretaria de Saúde",
+        "institutional_function": row[8] or "Não informado",
+    }
+
+
 def list_users() -> list[dict[str, Any]]:
     with _connection() as conn:
-        rows = conn.execute("SELECT username, role, environment, active, created_at, permissions, display_name, sector FROM users ORDER BY id").fetchall()
-    return [{"username": row[0], "role": row[1], "environment": row[2], "active": bool(row[3]), "created_at": row[4], "permissions": _decode_permissions(row[5], row[1]), "display_name": row[6] or row[0], "sector": row[7] or "Secretaria de Saúde"} for row in rows]
+        rows = conn.execute("SELECT username, role, environment, active, created_at, permissions, display_name, sector, institutional_function FROM users ORDER BY id").fetchall()
+    return [{"username": row[0], "role": row[1], "environment": row[2], "active": bool(row[3]), "created_at": row[4], "permissions": _decode_permissions(row[5], row[1]), "display_name": row[6] or row[0], "sector": row[7] or "Secretaria de Saúde", "institutional_function": row[8] or "Não informado"} for row in rows]
 
 
-def set_user_profile(username: str, role: str, permissions: dict[str, bool], new_username: str | None = None, display_name: str | None = None, sector: str | None = None) -> dict[str, Any]:
+def set_user_profile(username: str, role: str, permissions: dict[str, bool], new_username: str | None = None, display_name: str | None = None, sector: str | None = None, institutional_function: str | None = None) -> dict[str, Any]:
     username = username.strip().lower()
     target_username = (new_username or username).strip().lower()
     role = role.strip()
@@ -271,7 +302,7 @@ def set_user_profile(username: str, role: str, permissions: dict[str, bool], new
             if masters <= 1:
                 raise ValueError("Não é permitido retirar o perfil do último Master ativo")
         conn.execute(
-            "UPDATE users SET username = ?, role = ?, environment = CASE WHEN ? = 'Master' THEN environment ELSE 'gestor' END, permissions = ?, display_name = ?, sector = ? WHERE username = ?",
-            (target_username, role, role, json.dumps(normalized, ensure_ascii=False), (display_name or target_username).strip(), (sector or "Secretaria de Saúde").strip(), username),
+            "UPDATE users SET username = ?, role = ?, environment = CASE WHEN ? = 'Master' THEN environment ELSE 'gestor' END, permissions = ?, display_name = ?, sector = ?, institutional_function = ? WHERE username = ?",
+            (target_username, role, role, json.dumps(normalized, ensure_ascii=False), (display_name or target_username).strip(), (sector or "Secretaria de Saúde").strip(), (institutional_function or "Não informado").strip(), username),
         )
-    return {"username": target_username, "role": role, "permissions": normalized, "display_name": (display_name or target_username).strip(), "sector": (sector or "Secretaria de Saúde").strip()}
+    return {"username": target_username, "role": role, "permissions": normalized, "display_name": (display_name or target_username).strip(), "sector": (sector or "Secretaria de Saúde").strip(), "institutional_function": (institutional_function or "Não informado").strip()}

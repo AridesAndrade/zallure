@@ -27,6 +27,7 @@ from auth import (
     init_users,
     issue_session,
     list_users,
+    get_user_profile,
     rename_user,
     set_user_active,
     set_user_environment,
@@ -147,6 +148,7 @@ class UserProfileRequest(BaseModel):
     display_name: str = Field(min_length=1, max_length=120)
     role: str = Field(min_length=2, max_length=40)
     sector: str = Field(min_length=1, max_length=120)
+    institutional_function: str = Field(min_length=1, max_length=120)
     permissions: dict[str, bool] = Field(default_factory=dict)
 
 
@@ -232,13 +234,36 @@ def require_master(authorization: str | None = Header(default=None)) -> str:
     return session_user["username"] if session_user else "master"
 
 
-def build_developer_context() -> str:
+def build_user_context(user: dict[str, Any] | None) -> str:
+    if not user:
+        return (
+            "Usuário não identificado: trate a solicitação como orientação geral, não atribua autoridade institucional "
+            "e solicite identificação/autorização antes de recomendar atos administrativos."
+        )
+    permissions = user.get("permissions") or {}
+    enabled = [label for key, label in PERMISSION_CATALOG.items() if permissions.get(key)]
+    function = user.get("institutional_function") or "Não informado"
+    sector = user.get("sector") or "Secretaria de Saúde"
+    display_name = user.get("display_name") or user.get("username")
+    return (
+        f"Usuário autenticado: {display_name}. Função institucional: {function}. Setor: {sector}. "
+        f"Nível técnico do SESA: {user.get('role', 'Gestor')}. "
+        f"Autorizações habilitadas: {', '.join(enabled) if enabled else 'nenhuma autorização específica'}. "
+        "A função institucional limita a forma e o alcance da orientação: não trate servidor, assessor ou "
+        "coordenador como gerente ou diretor, não recomende decisões fora da competência informada e encaminhe "
+        "atos que exigem autoridade superior para aprovação do responsável competente. As autorizações técnicas "
+        "não concedem leitura direta de bases protegidas nem substituem normas, chefias ou delegações formais."
+    )
+
+
+def build_developer_context(user: dict[str, Any] | None = None) -> str:
+    user_context = build_user_context(user)
     return (
         "Você é o Agente Gestor do SESA no modo Desenvolvedor. "
         "Atue como especialista em Python, CrewAI, GitHub, APIs, LLMs e arquitetura multiagente. "
         "Somente usuários Master podem usar este modo. Explique mudanças com precisão, não invente execução "
         "e nunca revele segredos, tokens ou variáveis de ambiente. Ao concluir uma alteração, indique o nó do mapa "
-        "que deve ser atualizado e o motivo."
+        "que deve ser atualizado e o motivo. " + user_context
     )
 
 
@@ -286,10 +311,11 @@ def route_request(message: str) -> dict[str, Any]:
     }
 
 
-def process_events(mode: str, groq_enabled: bool, routing: dict[str, Any]) -> list[dict[str, str]]:
+def process_events(mode: str, groq_enabled: bool, routing: dict[str, Any], user: dict[str, Any] | None = None) -> list[dict[str, str]]:
     events = [
         {"key": "receber", "label": "Solicitação recebida pelo SESA"},
         {"key": "compreender", "label": "Agente Gestor validou o modo de atendimento"},
+        {"key": "autorizar", "label": f"Agente Gestor considerou a função institucional: {(user or {}).get('institutional_function', 'Não informado')}"},
         {"key": "encaminhar", "label": f"Encaminhando para {routing['specialist_label']}"},
         {"key": "consultar", "label": "Agentes de apoio autorizados foram definidos"},
     ]
@@ -301,7 +327,7 @@ def process_events(mode: str, groq_enabled: bool, routing: dict[str, Any]) -> li
     return events
 
 
-def groq_chat(message: str, mode: str) -> str:
+def groq_chat(message: str, mode: str, user: dict[str, Any] | None = None) -> str:
     api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
         return "Modo local ativo: GROQ_API_KEY ainda não configurada. Posso analisar a arquitetura e preparar o código, mas a resposta da LLM ficará desativada até a configuração segura do backend."
@@ -309,7 +335,7 @@ def groq_chat(message: str, mode: str) -> str:
         "model": os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
         "temperature": 0.2,
         "messages": [
-            {"role": "system", "content": build_developer_context() if mode == "developer" else "Você é o Agente Gestor operacional do SESA. Encaminhe solicitações sem expor código ou segredos."},
+            {"role": "system", "content": build_developer_context(user) if mode == "developer" else "Você é o Agente Gestor operacional do SESA. " + build_user_context(user) + " Encaminhe solicitações sem expor código ou segredos."},
             {"role": "user", "content": message},
         ],
     }
@@ -340,12 +366,10 @@ def login(request: LoginRequest) -> dict[str, Any]:
     user = authenticate_user(request.username, request.password)
     if not user:
         raise HTTPException(status_code=401, detail="Usuário ou senha inválidos")
-    if user["role"] != "Master" or user.get("environment") != "developer":
-        audit("auth.login", user["username"], {"role": user["role"], "environment": user.get("environment", "gestor"), "mode": "operational"})
-        return {"authenticated": True, "mode": "operational", "user": user}
+    mode = "developer" if user["role"] == "Master" and user.get("environment") == "developer" else "operational"
     token = issue_session(user)
-    audit("auth.login", user["username"], {"role": user["role"], "environment": user["environment"], "mode": "developer"})
-    return {"authenticated": True, "mode": "developer", "user": user, "token": token}
+    audit("auth.login", user["username"], {"role": user["role"], "environment": user.get("environment", "gestor"), "mode": mode})
+    return {"authenticated": True, "mode": mode, "user": user, "token": token}
 
 
 @app.get("/api/auth/master", dependencies=[Depends(require_master)])
@@ -400,14 +424,14 @@ def change_user_profile(username: str, request: UserProfileRequest) -> dict[str,
     if unknown:
         raise HTTPException(status_code=400, detail=f"Permissões desconhecidas: {', '.join(sorted(unknown))}")
     try:
-        profile = set_user_profile(username, request.role, request.permissions, request.username, request.display_name, request.sector)
+        profile = set_user_profile(username, request.role, request.permissions, request.username, request.display_name, request.sector, request.institutional_function)
     except sqlite3.IntegrityError:
         raise HTTPException(status_code=409, detail="Nome de usuário já existe") from None
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) from None
     except KeyError:
         raise HTTPException(status_code=404, detail="Usuário não encontrado") from None
-    audit("user.profile.update", "master", {"username": username, "new_username": request.username, "role": request.role, "sector": request.sector, "permissions": request.permissions})
+    audit("user.profile.update", "master", {"username": username, "new_username": request.username, "role": request.role, "institutional_function": request.institutional_function, "sector": request.sector, "permissions": request.permissions})
     return {"updated": True, **profile}
 
 
@@ -492,22 +516,28 @@ def update_status(update: StatusUpdate) -> dict[str, Any]:
 @app.post("/api/chat")
 def chat(request: ChatRequest, authorization: str | None = Header(default=None)) -> dict[str, Any]:
     actor = "gestor"
+    session_user = None
+    if authorization and authorization.startswith("Bearer "):
+        session_user = verify_session(authorization.removeprefix("Bearer ").strip())
     if request.mode == "developer":
         require_master(authorization)
-        actor = "master"
+        actor = session_user["username"] if session_user else "master"
+    elif session_user:
+        actor = session_user["username"]
+    user_context = get_user_profile(session_user["username"]) if session_user else None
     status = read_status()
     status["stages"]["gestor"] = {"label": "Processando solicitação", "state": "active", "progress": 45, "note": f"Modo {request.mode}"}
     write_status(status)
     try:
         groq_enabled = bool(os.getenv("GROQ_API_KEY"))
         routing = route_request(request.message)
-        answer = groq_chat(request.message, request.mode)
-        events = process_events(request.mode, groq_enabled, routing)
+        answer = groq_chat(request.message, request.mode, user_context)
+        events = process_events(request.mode, groq_enabled, routing, user_context)
         status = read_status()
         status["stages"]["gestor"] = {"label": "Atendimento concluído", "state": "active", "progress": 50, "note": f"Modo {request.mode}"}
         write_status(status)
-        audit("chat", actor, {"mode": request.mode, "message_length": len(request.message), "routing": routing, "crewai_available": bool(build_crewai_developer_agent())})
-        return {"answer": answer, "mode": request.mode, "routing": routing, "events": events, "updated_at": now_iso()}
+        audit("chat", actor, {"mode": request.mode, "message_length": len(request.message), "routing": routing, "institutional_function": (user_context or {}).get("institutional_function"), "sector": (user_context or {}).get("sector"), "permissions": (user_context or {}).get("permissions", {}), "crewai_available": bool(build_crewai_developer_agent())})
+        return {"answer": answer, "mode": request.mode, "routing": routing, "user_context": {"institutional_function": (user_context or {}).get("institutional_function", "Não informado"), "sector": (user_context or {}).get("sector", "Secretaria de Saúde"), "role": (user_context or {}).get("role", "Gestor")}, "events": events, "updated_at": now_iso()}
     except Exception:
         status = read_status()
         status["stages"]["gestor"] = {"label": "Falha controlada", "state": "blocked", "progress": 45, "note": "Verificar logs do backend"}
