@@ -20,7 +20,6 @@ PERMISSION_CATALOG = {
     "normas": "Consultar normas e legislação aprovadas",
     "financeiro": "Solicitar e receber dados financeiros",
     "compras": "Solicitar e receber dados de compras",
-    "contratos": "Solicitar e receber dados de contratos",
     "dados_operacionais": "Solicitar dados operacionais da saúde",
     "estatistica": "Solicitar cálculos e indicadores estatísticos",
     "relatorios": "Solicitar e receber relatórios",
