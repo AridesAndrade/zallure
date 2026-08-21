@@ -2,7 +2,7 @@
 
 ## Estado atual
 
-O repositório contém a interface SESA em `SESA/index.html`, uma versão alternativa em `SESA-v2/index.html`, backend FastAPI em `backend/app.py`, autenticação em `backend/auth.py` e scripts locais de inicialização. A landing page principal permanece na raiz do repositório.
+O repositório contém uma única interface oficial do SESA em `SESA/index.html`, backend FastAPI em `backend/app.py`, autenticação em `backend/auth.py` e scripts locais de inicialização. A landing page principal da Zallure permanece na raiz do repositório.
 
 ## Capacidades já presentes
 

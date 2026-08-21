@@ -273,11 +273,16 @@ def save_agent_config(agent_key: str, values: dict[str, Any], updated_by: str) -
 
 app = FastAPI(title="SESA — Agente Gestor", version="0.1.0")
 
-# Quando o backend é executado localmente, ele também serve a interface do SESA.
-# Isso mantém frontend e API na mesma origem e evita bloqueio de mixed content.
+# Quando o backend é executado localmente, ele também serve a interface oficial do SESA.
+# A estrutura canônica do projeto é: Projeto_SESA\backend\app.py e
+# Projeto_SESA\SESA\index.html. Isso mantém frontend e API na mesma origem.
 FRONTEND_ROOT = ROOT.parent / "SESA"
-if FRONTEND_ROOT.exists():
-    app.mount("/SESA", StaticFiles(directory=FRONTEND_ROOT, html=True), name="sesa-ui")
+if not (FRONTEND_ROOT / "index.html").is_file():
+    raise RuntimeError(
+        f"Interface oficial não encontrada em {FRONTEND_ROOT}. "
+        "Restaure a pasta SESA ao lado da pasta backend."
+    )
+app.mount("/SESA", StaticFiles(directory=FRONTEND_ROOT, html=True), name="sesa-ui")
 
 app.add_middleware(
     CORSMiddleware,
