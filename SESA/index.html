@@ -324,7 +324,25 @@
       .agent-picker-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.agent-picker-option{min-height:68px;padding:13px 15px;border:1px solid #4b4b4b;border-radius:9px;background:#202020;color:#eee;text-align:left;cursor:pointer;transition:border-color .15s,background .15s}.agent-picker-option:hover{border-color:#aaa;background:#292929}.agent-picker-option.selected{border-color:#f2f2f2;background:#343434;box-shadow:inset 0 0 0 1px #f2f2f2}.agent-picker-option strong,.agent-picker-option small{display:block}.agent-picker-option small{margin-top:5px;color:#999;font-family:'DM Mono',monospace;font-size:10px}.agent-picker-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid #444}.agent-picker-actions button{min-height:38px;padding:0 16px;border:1px solid #555;border-radius:7px;background:#242424;color:#eee;cursor:pointer}.agent-picker-actions button:hover{background:#303030}.agent-picker-actions .agent-picker-confirm{border-color:#eee;background:#eee;color:#111}.agent-picker-actions .agent-picker-confirm:disabled{border-color:#444;background:#2a2a2a;color:#777;cursor:not-allowed}
       @media (max-width:560px){.agent-picker-grid{grid-template-columns:1fr}.agent-picker-card{padding:20px}}
 .sensitive-topic-control{display:inline-flex;align-items:center;justify-content:center;gap:5px;flex:0 0 auto;width:34px;height:30px;margin:0 4px 0 2px;border:0;border-radius:7px;color:#bdbdbd;background:transparent;cursor:pointer}.sensitive-topic-control:hover{color:#fff;background:#303030}.sensitive-topic-control input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.sensitive-lock-icon{position:relative;display:block;width:11px;height:9px;margin-top:4px;border:1px solid currentColor;border-radius:2px}.sensitive-lock-icon::before{content:"";position:absolute;left:2px;top:-7px;width:5px;height:7px;border:1px solid currentColor;border-bottom:0;border-radius:5px 5px 0 0}.sensitive-check{display:none;font-size:12px;line-height:1;color:#e8e8e8}.sensitive-topic-control:has(input:checked){color:#fff;background:#383838}.sensitive-topic-control:has(input:checked) .sensitive-check{display:block}.sensitive-topic-control:has(input:focus-visible){outline:1px solid #aaa;outline-offset:2px}.composer-mode,.voice{display:none!important}.dev-panel-section.full .dev-field.effective-prompt-field{margin-top:14px;padding:12px;border:1px solid #555;border-radius:8px;background:#1b1b1b}.effective-prompt-field label{color:#f0f0f0;font-weight:600}.effective-prompt-field textarea{min-height:150px;border-color:#777;background:#151515}
-</style><style>.conversation-thread-panel{margin:14px 10px 0;border-top:1px solid rgba(255,255,255,.16);padding-top:12px}.conversation-thread-head{display:flex;justify-content:space-between;color:#e8e8e8;font-size:11px;text-transform:uppercase}.conversation-thread-new,.conversation-thread-item{border:1px solid rgba(255,255,255,.25);background:transparent;color:#fff;border-radius:5px;padding:6px;cursor:pointer}.conversation-thread-list{display:flex;flex-direction:column;gap:5px;margin-top:8px;max-height:210px;overflow:auto}.conversation-thread-item{width:100%;text-align:left;background:rgba(255,255,255,.04)}.conversation-thread-item small{display:block;color:#8d8d8d;font-size:10px;margin-top:3px}.conversation-thread-empty{color:#777;font-size:10px;padding:6px}</style></head>
+</style><style>.conversation-thread-panel{margin:14px 10px 0;border-top:1px solid rgba(255,255,255,.16);padding-top:12px}.conversation-thread-head{display:flex;justify-content:space-between;color:#e8e8e8;font-size:11px;text-transform:uppercase}.conversation-thread-new,.conversation-thread-item{border:1px solid rgba(255,255,255,.25);background:transparent;color:#fff;border-radius:5px;padding:6px;cursor:pointer}.conversation-thread-list{display:flex;flex-direction:column;gap:5px;margin-top:8px;max-height:210px;overflow:auto}.conversation-thread-item{width:100%;text-align:left;background:rgba(255,255,255,.04)}.conversation-thread-item small{display:block;color:#8d8d8d;font-size:10px;margin-top:3px}.conversation-thread-empty{color:#777;font-size:10px;padding:6px}</style>
+<style id="sesa-sidebar-layout-overrides">
+.sidebar{width:var(--sesa-sidebar-width,252px)!important;transition:none!important}
+.main{width:calc(100% - var(--sesa-sidebar-width,252px))!important;margin-left:var(--sesa-sidebar-width,252px)!important;transition:none!important}
+.sidebar-resizer{position:fixed;top:0;bottom:0;left:var(--sesa-sidebar-width,252px);width:7px;z-index:20;cursor:col-resize;background:transparent;touch-action:none}
+.sidebar-resizer::after{content:"";position:absolute;left:3px;top:0;bottom:0;width:1px;background:rgba(255,255,255,.16);transition:background .15s,width .15s}
+.sidebar-resizer:hover::after,.sidebar-resizer:focus::after{left:2px;width:3px;background:rgba(255,255,255,.42)}
+.conversation-thread-panel{display:block;max-height:min(42vh,420px);overflow:hidden}
+.conversation-thread-panel[hidden]{display:none}
+.conversation-thread-list{max-height:min(34vh,340px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.32) transparent;padding-right:3px}
+.conversation-thread-list::-webkit-scrollbar{width:4px}
+.conversation-thread-list::-webkit-scrollbar-track{background:transparent}
+.conversation-thread-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.28);border-radius:99px}
+.sidebar-settings-bottom{margin-top:auto;padding:10px 0 0}
+.sidebar-settings-bottom a{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid transparent;border-radius:10px;color:var(--text);text-decoration:none}
+.sidebar-settings-bottom a:hover{background:rgba(255,255,255,.05);border-color:var(--line)}
+@media (max-width:720px){.sidebar-resizer{display:none}.sidebar,.main{width:100%!important;margin-left:0!important}.conversation-thread-list{max-height:280px}}
+</style>
+</head>
   <body class="landing-mode">
 
         <div class="dev-modal-backdrop" id="dev-modal-backdrop" aria-hidden="true">
@@ -401,12 +419,13 @@ Error generating stack: `+l.message+`
         <div class="nav-label">Atendimento SESA</div>
         <nav class="nav" aria-label="Navegação do SESA">
 
-        </nav><section class="conversation-thread-panel" id="conversation-thread-panel" data-conversation-panel hidden><div class="conversation-thread-head"><span>Conversas</span><button type="button" class="conversation-thread-new" data-conversation-new>Nova</button></div><div class="conversation-thread-list" id="conversation-thread-list"><div class="conversation-thread-empty">Nenhuma conversa salva.</div></div></section>
+        </nav><section class="conversation-thread-panel" id="conversation-thread-panel" data-conversation-panel hidden><div class="conversation-thread-head"><span>Conversas anteriores</span><button type="button" class="conversation-thread-new" data-conversation-new>Nova</button></div><div class="conversation-thread-list" id="conversation-thread-list"><div class="conversation-thread-empty">Nenhuma conversa salva.</div></div></section>
         <div class="internal-note"><span class="nav-icon">◇</span><span>O SESA coordena internamente as áreas Jurídica, Dados, Estatística e Relatórios.</span></div>
         <div class="nav-label">Acesso rápido</div>
-        <nav class="nav"><a href="#etapas" data-view="stages"><span class="nav-icon">◫</span> Como o SESA trabalha</a><a href="#fontes"><span class="nav-icon">⌘</span> Fontes utilizadas pelo SESA</a><a href="#configuracoes" id="developer-settings-link" data-developer-only hidden><span class="nav-icon">⚙</span> Configurações</a></nav>
+        <nav class="nav"><a href="#etapas" data-view="stages"><span class="nav-icon">◫</span> WorkFlow</a><a href="#fontes"><span class="nav-icon">⌘</span> Fontes utilizadas pelo SESA</a></nav><div class="sidebar-settings-bottom"><a href="#configuracoes" id="developer-settings-link" data-developer-only hidden><span class="nav-icon">⚙</span> Configurações</a></div>
         <div class="sidebar-bottom"><div class="connection"><span class="dot"></span> SESA disponível</div><p class="sidebar-note">Estou aqui para receber sua solicitação e orientar o próximo passo.</p><div class="user-identity" id="user-identity"><span class="user-avatar" id="user-avatar">—</span><div><div class="user-name" id="user-name">Não autenticado</div><div class="user-role" id="user-role">login necessário</div></div></div></div>
       </aside>
+      <div class="sidebar-resizer" id="sidebar-resizer" role="separator" aria-label="Redimensionar menu lateral" tabindex="0"></div>
       <main class="main">
         <header class="topbar"><div class="crumb"><strong>SESA</strong> / <span id="topbar-context">acesso inicial</span></div><div class="mode-actions"><div class="mode" aria-live="polite"><span class="mode-label">modo de trabalho</span><strong id="work-mode">Gestor</strong><span class="mode-detail" id="work-profile">atendimento institucional</span></div><button class="mode-switch" id="master-access" type="button">Entrar como Master</button><button class="mode-switch" id="gestor-access" type="button" hidden>Voltar ao Gestor</button></div></header>
         <section class="login-screen" id="login-screen" aria-label="Acesso ao SESA"><form class="login-card" id="login-form"><p class="eyebrow">SESA · Secretaria de Saúde</p><h1>Entrar no SESA</h1><p>Informe seu usuário e senha. O SESA direcionará cada perfil ao ambiente autorizado.</p><label for="login-username">Usuário</label><input id="login-username" name="username" autocomplete="username" required placeholder="Digite seu usuário" /><label for="login-password">Senha</label><input id="login-password" name="password" type="password" autocomplete="current-password" required placeholder="Digite sua senha" /><button class="login-submit" id="login-submit" type="submit">Entrar</button><div class="login-error" id="login-error" role="alert"></div><p class="login-note">Acesso de desenvolvimento local · Fase 1</p></form></section>
@@ -620,5 +639,25 @@ Error generating stack: `+l.message+`
         </script>
       </main>
     </div>
-  </body>
+
+<script id="sesa-sidebar-resizer-controller">
+(function(){
+  const key='sesa_sidebar_width';
+  const root=document.documentElement;
+  const handle=document.getElementById('sidebar-resizer');
+  if(!handle) return;
+  const min=220;
+  const maxWidth=()=>Math.max(min,Math.floor(window.innerWidth*0.5));
+  const apply=(value)=>{const width=Math.max(min,Math.min(maxWidth(),Math.round(value)));root.style.setProperty('--sesa-sidebar-width',width+'px');localStorage.setItem(key,String(width));return width;};
+  const saved=Number(localStorage.getItem(key));
+  apply(Number.isFinite(saved)&&saved>0?saved:252);
+  let dragging=false;
+  const move=(event)=>{if(!dragging)return;apply(event.clientX);};
+  const stop=()=>{if(!dragging)return;dragging=false;document.body.classList.remove('sesa-resizing');window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',stop);};
+  handle.addEventListener('pointerdown',(event)=>{if(window.innerWidth<=720)return;dragging=true;handle.setPointerCapture?.(event.pointerId);document.body.classList.add('sesa-resizing');window.addEventListener('pointermove',move);window.addEventListener('pointerup',stop);event.preventDefault();});
+  handle.addEventListener('keydown',(event)=>{if(event.key==='ArrowLeft')apply((parseInt(getComputedStyle(root).getPropertyValue('--sesa-sidebar-width'))||252)-16);if(event.key==='ArrowRight')apply((parseInt(getComputedStyle(root).getPropertyValue('--sesa-sidebar-width'))||252)+16);});
+  window.addEventListener('resize',()=>apply(parseInt(getComputedStyle(root).getPropertyValue('--sesa-sidebar-width'))||252));
+})();
+</script>
+</body>
 </html>
