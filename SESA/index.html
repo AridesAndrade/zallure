@@ -38,7 +38,7 @@
       .sidebar { position:fixed; inset:0 auto 0 0; z-index:5; display:flex; width:252px; flex-direction:column; padding:18px 14px; border-right:1px solid var(--line); background:#1d1d1d; }
       .brand { display:flex; align-items:center; gap:10px; padding:4px 10px 24px; }
 .brand .brand-name { line-height:1; }
-      .brand-mark { display:block; flex:0 0 170px; width:170px; height:52px; border:0; border-radius:0; object-fit:contain; object-position:left center; background:transparent; filter:none; }
+      .brand-mark { display:block; flex:0 0 221px; width:221px; height:68px; max-width:100%; border:0; border-radius:0; object-fit:contain; object-position:left center; background:transparent!important; filter:none; }
       .brand-name { font-size:15px; font-weight:700; letter-spacing:-.03em; }
       .brand-sub { margin-top:3px; color:var(--muted); font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.08em; text-transform:uppercase; }
       .new-chat { display:flex; align-items:center; gap:10px; width:100%; padding:11px 12px; border:1px solid #333737; border-radius:9px; color:var(--text); background:#242424; text-align:left; cursor:pointer; transition:.18s ease; }
@@ -237,7 +237,7 @@
       body, .app { background:#111111; }
       .sidebar { background:#181818; border-color:rgba(255,255,255,.12); }
       .topbar { background:#151515; border-color:rgba(255,255,255,.12); }
-      .brand-mark, .send { color:#111; background:#d7d7d7; border-color:#a8a8a8; }
+      .send { color:#111; background:#d7d7d7; border-color:#a8a8a8; }
       .new-chat { color:#e7e7e7; background:#202020; border-color:#3c3c3c; }
       .new-chat:hover { background:#292929; border-color:#666; }
       .new-chat span, .nav-label, .nav a.active .nav-icon, .process-live, .eyebrow, .node-status { color:#d2d2d2; }
@@ -344,6 +344,7 @@
 .sidebar-settings-bottom a{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid transparent;border-radius:10px;color:var(--text);text-decoration:none}
 .sidebar-settings-bottom a:hover{background:rgba(255,255,255,.05);border-color:var(--line)}
 .sidebar-settings-bottom a + a{margin-top:2px}
+.brand .brand-mark{width:221px!important;height:68px!important;max-width:100%;background:transparent!important;border:0!important}
 @media (max-width:720px){.sidebar-resizer{display:none}.sidebar,.main{width:100%!important;margin-left:0!important}.conversation-thread-panel{min-height:280px}.conversation-thread-list{max-height:none}}
 </style>
 </head>
