@@ -337,7 +337,24 @@ class RoutingPreviewRequest(BaseModel):
 
 
 class AgentPromptConfigRequest(BaseModel):
+    name: str = Field(default="", max_length=240)
+    role: str = Field(default="", max_length=12000)
+    goal: str = Field(default="", max_length=12000)
+    backstory: str = Field(default="", max_length=12000)
+    provider: str = Field(default="Groq Cloud", max_length=120)
+    model: str = Field(default="llama-3.3-70b-versatile", max_length=240)
+    temperature: float = Field(default=0.2, ge=0.0, le=1.0)
+    tools: list[str] = Field(default_factory=list)
+    allow_delegation: bool = False
+    verbose: bool = True
+    max_iterations: int = Field(default=15, ge=1, le=100)
+    memory: bool = False
     system_prompt: str = Field(min_length=1, max_length=12000)
+    behavior_rules: str = Field(default="", max_length=12000)
+    routing_rules: str = Field(default="", max_length=12000)
+    allowed_actions: str = Field(default="", max_length=12000)
+    prohibited_actions: str = Field(default="", max_length=12000)
+    response_style: str = Field(default="", max_length=12000)
     security_policy: str = Field(min_length=1, max_length=12000)
     operational_policy: str = Field(min_length=1, max_length=12000)
     document_policy: str = Field(min_length=1, max_length=12000)
@@ -507,7 +524,9 @@ def _subject_token_hashes(message: str) -> set[str]:
         "acesso", "informacao", "informacoes", "assunto", "tratar", "solicito",
     }
     words = set(re.findall(r"[a-z0-9]{4,}", _fold_text(message))) - stopwords
-    return {hashlib.sha256(word.encode("utf-8")).hexdigest()[:16] for word in words}
+    # Normaliza plurais simples para aproximar variações como proposta/propostas.
+    normalized_words = {word[:-1] if word.endswith("s") and len(word) > 5 else word for word in words}
+    return {hashlib.sha256(word.encode("utf-8")).hexdigest()[:16] for word in normalized_words}
 
 
 def _subject_key(message: str, domain: str, owner_sector: str) -> str:
@@ -548,7 +567,16 @@ def find_sensitive_subject(message: str) -> dict[str, Any] | None:
             continue
         overlap = len(tokens & stored)
         score = overlap / max(len(tokens), len(stored))
-        if overlap >= 2 and score >= 0.25 and (best is None or score > best[0]):
+        domain_bridges = {
+            "compras": ("licitacao", "proposta", "concorrente", "fornecedor", "cotacao"),
+            "juridico": ("processo", "parecer", "apuracao"),
+            "financeiro": ("orcamento", "empenho", "folha"),
+            "saude": ("prontuario", "diagnostico", "saude"),
+            "pessoal": ("pessoal", "cpf", "endereco"),
+        }
+        bridge_present = any(term in _fold_text(message) for term in domain_bridges.get(row[1], ()))
+        same_subject = (overlap >= 2 and score >= 0.25) or (overlap >= 1 and bridge_present)
+        if same_subject and (best is None or score > best[0]):
             best = (score, row)
     return _safe_subject_metadata(best[1]) if best else None
 
@@ -693,7 +721,7 @@ def build_crewai_developer_agent() -> Any:
 
 SENSITIVE_DOMAIN_RULES = {
     "juridico": {"terms": ("sigiloso", "confidencial", "processo disciplinar", "apuração", "apuracao", "parecer reservado", "jurídico sensível", "juridico sensivel"), "permission": "sensivel_juridico", "label": "Jurídico"},
-    "compras": {"terms": ("compra sensível", "compra sensivel", "compras sensível", "compras sensivel", "compra sigilosa", "compras sigilosa", "licitação sigilosa", "licitacao sigilosa", "fornecedor sob sigilo", "cotação reservada", "cotacao reservada"), "permission": "sensivel_compras", "label": "Compras"},
+    "compras": {"terms": ("compra sensível", "compra sensivel", "compras sensível", "compras sensivel", "compra sigilosa", "compras sigilosa", "licitação sigilosa", "licitacao sigilosa", "propostas recebidas", "proposta recebida", "propostas dos concorrentes", "proposta dos concorrentes", "fornecedor sob sigilo", "cotação reservada", "cotacao reservada"), "permission": "sensivel_compras", "label": "Compras"},
     "financeiro": {"terms": ("financeiro sensível", "financeiro sensivel", "folha sigilosa", "empenho reservado", "orçamento reservado", "orcamento reservado"), "permission": "sensivel_financeiro", "label": "Financeiro"},
     "saude": {"terms": ("prontuário", "prontuario", "diagnóstico individual", "diagnostico individual", "dado de saúde identificável", "dado de saude identificavel"), "permission": "sensivel_saude", "label": "Saúde"},
     "pessoal": {"terms": ("cpf", "dados pessoais", "dado pessoal sensível", "dado pessoal sensivel", "endereço residencial", "endereco residencial"), "permission": "sensivel_pessoal", "label": "Dados pessoais"},
@@ -704,7 +732,7 @@ def sensitive_request_intent(message: str) -> str:
     normalized = message.casefold()
     inference_terms = (
         "o que o diretor", "o que a diretora", "qual foi o problema", "qual problema foi encontrado",
-        "o que foi descoberto", "quem reclamou", "quem informou", "qual documento", "me diga o que",
+        "o que foi descoberto", "quem reclamou", "quem informou", "qual documento", "qual foi o conteúdo", "qual valor", "qual foi o valor", "qual proposta", "me diga o que",
         "confirme se o diretor", "confirme se a diretoria", "qual foi a crítica", "o que consta no assunto",
     )
     guidance_terms = (
@@ -829,7 +857,7 @@ def process_events(mode: str, groq_enabled: bool, routing: dict[str, Any], user:
         {"key": "compreender", "label": "Agente Gestor validou o modo de atendimento"},
         {"key": "autorizar", "label": f"Agente Gestor considerou a função institucional: {(user or {}).get('institutional_function', 'Não informado')}"},
         {"key": "encaminhar", "label": (f"Conteúdo sensível autorizado para {routing['sensitive_domain']}; encaminhando com necessidade de conhecimento" if routing.get("sensitive") and routing.get("sensitive_authorized") else ("Conteúdo sensível bloqueado: autorização específica não habilitada" if routing.get("sensitive") else f"Encaminhando para {routing['specialist_label']}"))},
-        {"key": "consultar", "label": "Agentes de apoio autorizados foram definidos"},
+        {"key": "consultar", "label": f"Consultando {routing.get('specialist_label', 'especialista')} e apoios autorizados: {', '.join(routing.get('support_agents') or ['nenhum'])}"},
     ]
     if groq_enabled:
         events.append({"key": "consultar", "label": "Solicitando resposta à LLM configurada"})
@@ -868,17 +896,23 @@ def guided_sensitive_response(message: str, mode: str, user: dict[str, Any], sco
     return response.json()["choices"][0]["message"]["content"]
 
 
-def groq_chat(message: str, mode: str, user: dict[str, Any] | None = None) -> str:
+def groq_chat(message: str, mode: str, user: dict[str, Any] | None = None, agent_key: str = "gestor") -> str:
+    agent = get_agent_config(agent_key)
+    agent_name = agent.get("name", agent_key)
     api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
-        return "Modo local ativo: GROQ_API_KEY ainda não configurada. Posso analisar a arquitetura e preparar o código, mas a resposta da LLM ficará desativada até a configuração segura do backend."
+        return f"Modo local ativo: GROQ_API_KEY ainda não configurada. O {agent_name} foi identificado e está pronto, mas a resposta da LLM ficará desativada até a configuração segura do backend."
+    if mode == "developer":
+        system = build_developer_context(user) + " " + build_configured_agent_context("gestor", user)
+        selected_agent_key = "gestor"
+    else:
+        system = build_configured_agent_context(agent_key, user) + " " + build_user_context(user) + " Encaminhe solicitações sem expor código ou segredos."
+        selected_agent_key = agent_key
+    selected_agent = get_agent_config(selected_agent_key)
     payload = {
-        "model": os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
-        "temperature": 0.2,
-        "messages": [
-            {"role": "system", "content": (build_developer_context(user) + " " + build_configured_agent_context("gestor", user)) if mode == "developer" else build_configured_agent_context("gestor", user) + " " + build_user_context(user) + " Encaminhe solicitações sem expor código ou segredos."},
-            {"role": "user", "content": message},
-        ],
+        "model": selected_agent.get("model") or os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
+        "temperature": float(selected_agent.get("temperature", 0.2)),
+        "messages": [{"role": "system", "content": system}, {"role": "user", "content": message}],
     }
     response = requests.post(GROQ_URL, headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}, json=payload, timeout=60)
     response.raise_for_status()
@@ -946,6 +980,26 @@ init_conversations_db()
 def health() -> dict[str, str]:
     return {"status": "ok", "service": "sesa-agente-gestor"}
 
+
+@app.get("/api/audit", dependencies=[Depends(require_master)])
+def list_audit(limit: int = 100, authorization: str | None = Header(default=None)) -> dict[str, Any]:
+    require_master(authorization)
+    safe_limit = max(1, min(int(limit), 500))
+    init_audit()
+    with sqlite3.connect(AUDIT_DB) as conn:
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute(
+            "SELECT id, created_at, action, actor, payload FROM audit_log ORDER BY id DESC LIMIT ?",
+            (safe_limit,),
+        ).fetchall()
+    entries = []
+    for row in rows:
+        try:
+            payload = json.loads(row["payload"] or "{}")
+        except json.JSONDecodeError:
+            payload = {"raw": row["payload"]}
+        entries.append({"id": row["id"], "created_at": row["created_at"], "action": row["action"], "actor": row["actor"], "payload": payload})
+    return {"entries": entries, "count": len(entries)}
 
 @app.get("/api/status")
 def status() -> dict[str, Any]:
@@ -1091,6 +1145,34 @@ def drive_status() -> dict[str, Any]:
     overview = drive_overview()
     audit("drive.overview", "master", {"root_exists": overview["exists"]})
     return overview
+
+
+@app.get("/api/sources", dependencies=[Depends(require_master)])
+def list_sources() -> dict[str, Any]:
+    """Lista somente metadados das fontes locais sincronizadas; não lê o conteúdo dos arquivos."""
+    folders: dict[str, Any] = {}
+    total_files = 0
+    for key, folder_name in DRIVE_FOLDERS.items():
+        folder = DRIVE_ROOT / folder_name
+        items: list[dict[str, Any]] = []
+        if folder.exists():
+            for item in sorted((entry for entry in folder.rglob("*") if entry.is_file()), key=lambda path: str(path).lower()):
+                try:
+                    stat = item.stat()
+                    items.append({
+                        "name": item.name,
+                        "relative_path": str(item.relative_to(DRIVE_ROOT)),
+                        "extension": item.suffix.lower(),
+                        "size_bytes": stat.st_size,
+                        "modified_at": datetime.fromtimestamp(stat.st_mtime, timezone.utc).isoformat(),
+                    })
+                except OSError:
+                    continue
+        total_files += len(items)
+        folders[key] = {"name": folder_name, "exists": folder.exists(), "files": items}
+    result = {"root": str(DRIVE_ROOT), "exists": DRIVE_ROOT.exists(), "total_files": total_files, "folders": folders, "content_indexed": False}
+    audit("sources.list", "master", {"root_exists": result["exists"], "total_files": total_files})
+    return result
 
 
 class OrchestrationConfigRequest(BaseModel):
@@ -1456,7 +1538,8 @@ def chat(request: ChatRequest, authorization: str | None = Header(default=None))
             groq_enabled = False
         else:
             routing["guidance_allowed"] = False
-            answer = groq_chat(request.message, request.mode, user_context)
+            selected_agent_key = "gestor" if request.mode == "developer" else routing.get("specialist", "gestor")
+            answer = groq_chat(request.message, request.mode, user_context, selected_agent_key)
         events = process_events(request.mode, groq_enabled, routing, user_context)
         status = read_status()
         status["stages"]["gestor"] = {"label": "Atendimento concluído", "state": "active", "progress": 50, "note": f"Modo {request.mode}"}
