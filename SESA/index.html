@@ -457,9 +457,9 @@ Error generating stack: `+l.message+`
           const escapeHtml = (value) => value.replace(/[&<>\"]/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '\"':'&quot;' }[char]));
           const workspace = document.querySelector('.workspace');
           const masterMeeting = { active: false, agentKey: null, pending: 0 };
-          const getConfiguredAgentName = (key) => config?.agents?.[key]?.name || key || 'agente';
+          const getConfiguredAgentName = (key) => readDevConfig()?.agents?.[key]?.name || key || 'agente';
           const chooseMasterMeetingAgent = () => {
-            const agents = Object.entries(config?.agents || {});
+            const meetingConfig = readDevConfig(); const agents = Object.entries(meetingConfig?.agents || {});
             const fallback = [['gestor', 'Agente Gestor'], ['juridico', 'Agente Jurídico'], ['dados', 'Agente Dados'], ['estatistico', 'Agente Estatístico'], ['relatorios', 'Agente Relatórios'], ['financeiro', 'Agente Financeiro'], ['servidor_publico', 'Agente Servidor Público']];
             const options = agents.length ? agents.map(([key, item]) => [key, item?.name || key]) : fallback;
             const listing = options.map(([key, name], index) => `${index + 1}. ${name} (${key})`).join('\n');
