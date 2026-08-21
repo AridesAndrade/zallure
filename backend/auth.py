@@ -154,6 +154,25 @@ def set_user_environment(username: str, environment: str) -> None:
         raise KeyError(username)
 
 
+def set_user_role(username: str, role: str) -> None:
+    username = username.strip().lower()
+    role = role.strip()
+    with _connection() as conn:
+        row = conn.execute("SELECT role, active FROM users WHERE username = ?", (username,)).fetchone()
+        if not row:
+            raise KeyError(username)
+        if row[0] == "Master" and role != "Master":
+            masters = conn.execute("SELECT COUNT(*) FROM users WHERE role = 'Master' AND active = 1").fetchone()[0]
+            if masters <= 1:
+                raise ValueError("Não é permitido retirar o perfil do último Master ativo")
+        updated = conn.execute(
+            "UPDATE users SET role = ?, environment = CASE WHEN ? = 'Master' THEN environment ELSE 'gestor' END WHERE username = ?",
+            (role, role, username),
+        ).rowcount
+    if not updated:
+        raise KeyError(username)
+
+
 def rename_user(username: str, new_username: str) -> dict[str, str]:
     old_username = username.strip().lower()
     new_username = new_username.strip().lower()

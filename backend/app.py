@@ -31,6 +31,7 @@ from auth import (
     set_user_active,
     set_user_environment,
     set_user_password,
+    set_user_role,
     verify_session,
 )
 
@@ -133,6 +134,10 @@ class UserRenameRequest(BaseModel):
 
 class UserEnvironmentRequest(BaseModel):
     environment: str = Field(pattern="^(gestor|developer)$")
+
+
+class UserRoleRequest(BaseModel):
+    role: str = Field(min_length=2, max_length=40)
 
 
 class UserPasswordRequest(BaseModel):
@@ -374,6 +379,22 @@ def change_user_status(username: str, request: UserStatusRequest) -> dict[str, b
         raise HTTPException(status_code=404, detail="Usuário não encontrado") from None
     audit("user.status.update", "master", {"username": username, "active": request.active})
     return {"updated": True}
+
+
+@app.patch("/api/users/{username}/role", dependencies=[Depends(require_master)])
+def change_user_role(username: str, request: UserRoleRequest) -> dict[str, Any]:
+    role = request.role.strip()
+    allowed_roles = {"Master", "Gestor", "Secretaria", "Auditor", "Dados", "Estatístico", "Relatórios"}
+    if role not in allowed_roles:
+        raise HTTPException(status_code=400, detail="Perfil não permitido. Use um dos perfis cadastrados no SESA")
+    try:
+        set_user_role(username, role)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from None
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado") from None
+    audit("user.role.update", "master", {"username": username, "role": role})
+    return {"updated": True, "role": role}
 
 
 @app.patch("/api/users/{username}/environment", dependencies=[Depends(require_master)])
