@@ -615,7 +615,7 @@ Error generating stack: `+l.message+`
             const currentDeveloper = applyWorkMode(); const masterToken = currentDeveloper ? sessionStorage.getItem('sesa_master_token') : null; const requestMode = currentDeveloper ? 'developer' : 'operational'; if (currentDeveloper && !masterToken) throw new Error('Sessão Master não encontrada'); const headers = { 'Content-Type':'application/json' }; if (masterToken) headers.Authorization = `Bearer ${masterToken}`; const response = await fetch(`${API_BASE}/api/chat`, { method:'POST', headers, body:JSON.stringify({ message, mode:requestMode, sensitive:Boolean(document.querySelector('#sensitive-topic-toggle')?.checked) }) }); const body = await response.json(); if (!response.ok) throw new Error(body.detail || 'Falha no backend'); appendMessage(body.answer, 'SESA'); applyProcessEvents(body.events); finishProcess(); await refreshStatus();
           } catch (error) { finishProcess(); appendMessage(`Não foi possível concluir sua solicitação: ${error.message}`, masterMeeting.active ? getConfiguredAgentName(masterMeeting.agentKey) : 'SESA'); } finally { input.value = ''; send.disabled = false; } });
           input.addEventListener('keydown', (event) => { if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') send.click(); });
-          refreshStatus();
+          refreshStatus(); loadConversationList();
           if (API_BASE) window.setInterval(refreshStatus, 15000);
         </script>
       </main>
