@@ -43,7 +43,9 @@
       .new-chat { display:flex; align-items:center; gap:10px; width:100%; padding:11px 12px; border:1px solid #333737; border-radius:9px; color:var(--text); background:#242424; text-align:left; cursor:pointer; transition:.18s ease; }
       .new-chat:hover { border-color:#58615e; background:#1e2120; }
       .new-chat span { color:var(--accent); font-size:18px; line-height:1; }
-      .nav-label { margin:26px 10px 8px; color:var(--accent); font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.13em; text-transform:uppercase; }
+      .nav-label { margin:26px 10px 8px; color:#a2a2a2; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.13em; text-transform:uppercase; }
+.sidebar-section-label { margin:12px 10px 8px; color:#a2a2a2; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.13em; text-transform:uppercase; }
+.conversation-thread-head { color:#a2a2a2!important; font-family:'DM Mono',monospace; font-size:9px!important; letter-spacing:.13em; text-transform:uppercase; }
       .nav { display:grid; gap:3px; }
       .nav a { display:flex; align-items:center; gap:11px; padding:10px 11px; border:1px solid transparent; border-radius:8px; color:#fff; font-size:12px; text-decoration:none; transition:.18s ease; }
       .nav a:hover,.nav a.active { color:#fff; border-color:var(--accent); background:#282d24; }
@@ -420,7 +422,8 @@ Error generating stack: `+l.message+`
         <div class="nav-label">Atendimento SESA</div>
         <nav class="nav" aria-label="Navegação do SESA">
 
-        </nav><section class="conversation-thread-panel" id="conversation-thread-panel" data-conversation-panel><div class="conversation-thread-head"><span>Conversas anteriores</span><button type="button" class="conversation-thread-new" data-conversation-new>Nova</button></div><div class="conversation-thread-list" id="conversation-thread-list"><div class="conversation-thread-empty">Nenhuma conversa salva.</div></div></section>
+        </nav><section class="conversation-thread-panel" id="conversation-thread-panel" data-conversation-panel><div class="conversation-thread-head"><span>Conversas anteriores</span></div><div class="conversation-thread-list" id="conversation-thread-list"><div class="conversation-thread-empty">Nenhuma conversa salva.</div></div></section>
+        <div class="sidebar-section-label">Navegação</div>
         <div class="sidebar-settings-bottom"><a href="#etapas" data-view="stages"><span class="nav-icon">◌</span> WorkFlow</a><a href="#configuracoes" id="developer-settings-link" data-developer-only hidden><span class="nav-icon">⚙</span> Configurações</a></div>
         <div class="sidebar-bottom"><div class="connection"><span class="dot"></span> SESA disponível</div><p class="sidebar-note">Estou aqui para receber sua solicitação e orientar o próximo passo.</p><div class="user-identity" id="user-identity"><span class="user-avatar" id="user-avatar">—</span><div><div class="user-name" id="user-name">Não autenticado</div><div class="user-role" id="user-role">login necessário</div></div></div></div>
       </aside>
