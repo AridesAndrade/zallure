@@ -280,7 +280,15 @@ def build_crewai_developer_agent() -> Any:
     )
 
 
-def route_request(message: str) -> dict[str, Any]:
+SENSITIVE_DOMAIN_RULES = {
+    "juridico": {"terms": ("sigiloso", "confidencial", "processo disciplinar", "apuração", "apuracao", "parecer reservado", "jurídico sensível", "juridico sensivel"), "permission": "sensivel_juridico", "label": "Jurídico"},
+    "compras": {"terms": ("compra sensível", "compra sensivel", "compras sensível", "compras sensivel", "compra sigilosa", "compras sigilosa", "licitação sigilosa", "licitacao sigilosa", "fornecedor sob sigilo", "cotação reservada", "cotacao reservada"), "permission": "sensivel_compras", "label": "Compras"},
+    "financeiro": {"terms": ("financeiro sensível", "financeiro sensivel", "folha sigilosa", "empenho reservado", "orçamento reservado", "orcamento reservado"), "permission": "sensivel_financeiro", "label": "Financeiro"},
+    "saude": {"terms": ("prontuário", "prontuario", "diagnóstico individual", "diagnostico individual", "dado de saúde identificável", "dado de saude identificavel"), "permission": "sensivel_saude", "label": "Saúde"},
+    "pessoal": {"terms": ("cpf", "dados pessoais", "dado pessoal sensível", "dado pessoal sensivel", "endereço residencial", "endereco residencial"), "permission": "sensivel_pessoal", "label": "Dados pessoais"},
+}
+
+def route_request(message: str, user: dict[str, Any] | None = None) -> dict[str, Any]:
     """Classifica o destino sem abrir ou expor arquivos das bases.
 
     O Gestor apenas identifica a área solicitante. O acesso documental permanece
@@ -296,7 +304,19 @@ def route_request(message: str) -> dict[str, Any]:
         specialist = "financeiro"
         specialist_label = "Agente Financeiro"
 
+    sensitive_domain = None
+    sensitive_rule = None
+    for domain, rule in SENSITIVE_DOMAIN_RULES.items():
+        if any(term in normalized for term in rule["terms"]):
+            sensitive_domain = domain
+            sensitive_rule = rule
+            break
+    permissions = (user or {}).get("permissions") or {}
+    sensitive_authorized = bool(sensitive_rule and permissions.get(sensitive_rule["permission"], False))
+
     support_agents = ["dados"]
+    if sensitive_rule and not sensitive_authorized:
+        support_agents = []
     if any(term in normalized for term in ("média", "media", "percentual", "taxa", "tendência", "tendencia", "desvio", "indicador", "estatística", "estatistica")):
         support_agents.append("estatistico")
     if any(term in normalized for term in ("relatório", "relatorio", "ofício", "oficio", "portaria", "documento", "exportar")):
@@ -308,6 +328,11 @@ def route_request(message: str) -> dict[str, Any]:
         "support_agents": support_agents,
         "database_access": "restricted_to_shared_support_agents",
         "content_read_by_gestor": False,
+        "sensitive": bool(sensitive_rule),
+        "sensitive_domain": sensitive_rule["label"] if sensitive_rule else None,
+        "sensitive_permission": sensitive_rule["permission"] if sensitive_rule else None,
+        "sensitive_authorized": sensitive_authorized if sensitive_rule else True,
+        "access_decision": "authorized" if not sensitive_rule or sensitive_authorized else "blocked_need_to_know",
     }
 
 
@@ -316,7 +341,7 @@ def process_events(mode: str, groq_enabled: bool, routing: dict[str, Any], user:
         {"key": "receber", "label": "Solicitação recebida pelo SESA"},
         {"key": "compreender", "label": "Agente Gestor validou o modo de atendimento"},
         {"key": "autorizar", "label": f"Agente Gestor considerou a função institucional: {(user or {}).get('institutional_function', 'Não informado')}"},
-        {"key": "encaminhar", "label": f"Encaminhando para {routing['specialist_label']}"},
+        {"key": "encaminhar", "label": (f"Conteúdo sensível autorizado para {routing['sensitive_domain']}; encaminhando com necessidade de conhecimento" if routing.get("sensitive") and routing.get("sensitive_authorized") else ("Conteúdo sensível bloqueado: autorização específica não habilitada" if routing.get("sensitive") else f"Encaminhando para {routing['specialist_label']}"))},
         {"key": "consultar", "label": "Agentes de apoio autorizados foram definidos"},
     ]
     if groq_enabled:
@@ -530,8 +555,16 @@ def chat(request: ChatRequest, authorization: str | None = Header(default=None))
     write_status(status)
     try:
         groq_enabled = bool(os.getenv("GROQ_API_KEY"))
-        routing = route_request(request.message)
-        answer = groq_chat(request.message, request.mode, user_context)
+        routing = route_request(request.message, user_context)
+        if routing.get("access_decision") == "blocked_need_to_know":
+            answer = (
+                "O SESA identificou que esta solicitação pode envolver conteúdo sensível de "
+                f"{routing.get('sensitive_domain')}. A permissão geral do domínio não autoriza esse conteúdo. "
+                "O pedido foi bloqueado e deve ser submetido ao responsável competente para autorização específica."
+            )
+            groq_enabled = False
+        else:
+            answer = groq_chat(request.message, request.mode, user_context)
         events = process_events(request.mode, groq_enabled, routing, user_context)
         status = read_status()
         status["stages"]["gestor"] = {"label": "Atendimento concluído", "state": "active", "progress": 50, "note": f"Modo {request.mode}"}

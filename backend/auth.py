@@ -29,6 +29,11 @@ PERMISSION_CATALOG = {
     "configuracao_agentes": "Visualizar e alterar configurações dos agentes",
     "github": "Solicitar operações de desenvolvimento e GitHub",
     "producao": "Solicitar publicação em produção autorizada",
+    "sensivel_juridico": "Conteúdo sensível do Jurídico",
+    "sensivel_compras": "Conteúdo sensível de Compras",
+    "sensivel_financeiro": "Conteúdo sensível Financeiro",
+    "sensivel_saude": "Conteúdo sensível da Saúde",
+    "sensivel_pessoal": "Dados pessoais sensíveis",
 }
 
 DEFAULT_PERMISSIONS = {key: False for key in PERMISSION_CATALOG}
@@ -36,7 +41,9 @@ DEFAULT_PERMISSIONS = {key: False for key in PERMISSION_CATALOG}
 def _permissions_for_role(role: str) -> dict[str, bool]:
     permissions = dict(DEFAULT_PERMISSIONS)
     if role == "Master":
-        permissions = {key: True for key in PERMISSION_CATALOG}
+        # Master administra a plataforma, mas não recebe automaticamente
+        # autorização para consultar conteúdo sensível.
+        permissions = {key: True for key in PERMISSION_CATALOG if not key.startswith("sensivel_")}
     elif role in {"Gestor", "Secretaria"}:
         for key in ("normas", "dados_operacionais", "estatistica", "relatorios", "documentos_oficiais"):
             permissions[key] = True
