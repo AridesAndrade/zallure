@@ -59,6 +59,7 @@ AUDIT_DB = Path(os.getenv("SESA_AUDIT_DB", ROOT / "audit.db"))
 SENSITIVE_DB = Path(os.getenv("SESA_SENSITIVE_DB", ROOT / "sensitive_subjects.db"))
 AGENT_CONFIG_FILE = Path(os.getenv("SESA_AGENT_CONFIG_FILE", ROOT / "agent_prompts.json"))
 AGENT_PROPOSALS_FILE = Path(os.getenv("SESA_AGENT_PROPOSALS_FILE", ROOT / "agent_config_proposals.json"))
+ORCHESTRATION_CONFIG_FILE = Path(os.getenv("SESA_ORCHESTRATION_CONFIG_FILE", ROOT / "orchestration_config.json"))
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 DEFAULT_AGENT_PROMPTS: dict[str, dict[str, str]] = {
@@ -119,6 +120,57 @@ DEFAULT_AGENT_PROMPTS: dict[str, dict[str, str]] = {
         "sensitive_policy": "Não trate uma permissão financeira geral como autorização para todo conteúdo sensível.",
     },
 }
+
+
+ORCHESTRATION_DEFAULTS: dict[str, Any] = {
+    "architecture_description": "O Agente Gestor é a interface única. Agentes especialistas recebem as solicitações encaminhadas. Dados, Estatístico e Relatórios são agentes compartilhados de apoio.",
+    "entry_agents": ["gestor"],
+    "specialist_agents": ["saude", "juridico", "financeiro", "servidor_publico"],
+    "shared_agents": ["dados", "estatistico", "relatorios"],
+    "base_access_matrix": "Somente Dados, Estatístico e Relatórios acessam bases diretamente. Gestor e especialistas solicitam dados por meio do fluxo autorizado.",
+    "allowed_routes": "Gestor -> especialista; especialista -> Dados; especialista -> Estatístico; especialista -> Relatórios; apoio -> especialista; especialista -> Gestor; Gestor -> usuário.",
+    "prohibited_routes": "Usuário -> especialista diretamente; Gestor -> base restrita diretamente; especialista -> base sem autorização; agente de apoio -> usuário sem passar pela camada autorizada.",
+    "information_packet_format": "Toda passagem deve conter finalidade, usuário, função, setor, permissões, sensibilidade, escopo, fonte, período, filtros, resultado, limitações e nível de confiança.",
+    "step_order": "1. Receber e contextualizar; 2. identificar finalidade; 3. verificar autorização; 4. encaminhar ao especialista; 5. acionar apoio; 6. validar; 7. integrar; 8. entregar resultado autorizado.",
+    "forwarding_conditions": "Encaminhar conforme finalidade e domínio. Em dúvida, pedir esclarecimento. Solicitações sensíveis exigem verificação de necessidade de conhecimento.",
+    "return_rules": "Resultados dos agentes de apoio retornam ao especialista solicitante; o especialista retorna ao Gestor; somente o Gestor entrega ao usuário.",
+    "validation_rules": "Verificar origem, período, completude, consistência, autorização, anonimização, limitações e compatibilidade com a solicitação.",
+    "failure_policy": "Não inventar dados. Informar a falha, registrar o evento, preservar o que foi obtido e encaminhar para revisão quando necessário.",
+    "sensitivity_policy": "Classificar por setor, usuário, assunto, processo, documento, componente e estágio. Separar componentes públicos e restritos.",
+    "privacy_policy": "Priorizar dados agregados e anonimizados. Não expor identificadores de pacientes ou conteúdo protegido sem autorização específica.",
+    "analysis_levels": "Começar pela visão macro da UBS, depois processo/equipe e, somente quando autorizado, profissional responsável pelo registro.",
+    "statistical_criteria": "Priorizar proporções, ajustes, histórico e comparação entre UBS equivalentes. Rankings somente por indicador; tendências podem usar regressão linear e R² quando aplicável.",
+    "periodicity": "Permitir atuação reativa e análises periódicas conforme periodicidade definida pelo Master ou pelo gestor responsável.",
+    "monitoring_alerts": "Monitorar desvios relevantes, qualidade dos dados, falhas, pendências e alterações de configuração; gerar alertas conforme limiares editáveis.",
+    "analytical_memory": "Manter memória histórica de análises, desvios, recomendações, indicadores, versões e validações, sem armazenar conteúdo protegido fora do escopo.",
+    "delivery_format": "Entregar síntese, método, fontes, período, indicadores, limitações, recomendações consultivas e classificação de acesso.",
+    "human_approval": "Decisões e execuções permanecem sob responsabilidade humana. Aprovação é necessária para mudanças de conhecimento, documentos oficiais, liberação de conteúdo restrito e ações administrativas.",
+    "version": 1,
+}
+
+
+def load_orchestration_config() -> dict[str, Any]:
+    try:
+        value = json.loads(ORCHESTRATION_CONFIG_FILE.read_text(encoding="utf-8")) if ORCHESTRATION_CONFIG_FILE.exists() else {}
+        if not isinstance(value, dict):
+            value = {}
+    except (OSError, json.JSONDecodeError, TypeError):
+        value = {}
+    merged = {**ORCHESTRATION_DEFAULTS, **value}
+    merged["version"] = int(merged.get("version", 1))
+    return merged
+
+
+def save_orchestration_config(config: dict[str, Any], actor: str) -> dict[str, Any]:
+    current = load_orchestration_config()
+    merged = {**current, **config}
+    merged["version"] = int(current.get("version", 1)) + 1
+    merged["updated_at"] = now_iso()
+    merged["updated_by"] = actor
+    ORCHESTRATION_CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    ORCHESTRATION_CONFIG_FILE.write_text(json.dumps(merged, ensure_ascii=False, indent=2), encoding="utf-8")
+    audit("orchestration.config.update", actor, {"version": merged["version"], "fields": list(config)})
+    return merged
 
 
 AGENT_CREW_DEFAULTS = {
@@ -979,6 +1031,26 @@ def drive_status() -> dict[str, Any]:
     return overview
 
 
+class OrchestrationConfigRequest(BaseModel):
+    config: dict[str, Any] = Field(default_factory=dict)
+
+
+@app.get("/api/orchestration-config", dependencies=[Depends(require_master)])
+def orchestration_configuration() -> dict[str, Any]:
+    return {"orchestration": load_orchestration_config()}
+
+
+@app.patch("/api/orchestration-config", dependencies=[Depends(require_master)])
+def update_orchestration_configuration(request: OrchestrationConfigRequest, authorization: str | None = Header(default=None)) -> dict[str, Any]:
+    actor = require_master(authorization)
+    allowed = set(ORCHESTRATION_DEFAULTS) | {"updated_at", "updated_by"}
+    unknown = set(request.config) - allowed
+    if unknown:
+        raise HTTPException(status_code=400, detail=f"Campos de orquestração desconhecidos: {', '.join(sorted(unknown))}")
+    saved = save_orchestration_config(request.config, actor)
+    return {"orchestration": saved}
+
+
 @app.get("/api/agent-config", dependencies=[Depends(require_master)])
 def agent_configurations() -> dict[str, Any]:
     return {"agents": load_agent_configs()}
@@ -1135,6 +1207,7 @@ def chat(request: ChatRequest, authorization: str | None = Header(default=None))
     try:
         groq_enabled = bool(os.getenv("GROQ_API_KEY"))
         routing = route_request(request.message, user_context, request.sensitive, persist_sensitive=True)
+        orchestration = load_orchestration_config()
         decision = routing.get("access_decision")
         intent = routing.get("sensitive_intent")
         if decision == "guided_operation" and user_context:
